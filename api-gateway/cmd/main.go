@@ -25,6 +25,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	handler.NewUserHandler(clind.Clind,engin)
+	handler.NewUserHandler(clind.Clind, engin)
 
 }

@@ -8,5 +8,4 @@ type UserDetails struct {
 	Phone           string `json:"phone"          validate:"len=10"`
 	Password        string `json:"password,omitempty"       validate:"min=4"`
 	ConfirmPassword string `json:"confirmpassword,omitempty" validate:"eqfield=Password"`
-	ReferalCode     string `json:"referalCode,omitempty"`
 }
