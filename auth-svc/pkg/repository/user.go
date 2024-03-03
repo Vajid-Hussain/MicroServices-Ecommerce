@@ -1,6 +1,7 @@
 package repository_auth_svc
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -62,4 +63,25 @@ func (d *userRepository) ChangeUserStatusActive(phone string) error {
 	} else {
 		return nil
 	}
+}
+
+func (d *userRepository) FetchPasswordUsingPhone(phone string) (string, error) {
+	var password string
+
+	query := "SELECT password FROM users WHERE phone=? AND status='active'"
+	row := d.DB.Raw(query, phone).Row()
+	fmt.Println("--------", row)
+
+	if row == nil {
+		return "", errors.New("no user exist or you are blocked by admin")
+	}
+
+	err := row.Scan(&password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", errors.New("user does not exist or user get blocked")
+		}
+		return "", fmt.Errorf("error scanning row: %s", err)
+	}
+	return password, nil
 }

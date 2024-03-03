@@ -18,8 +18,10 @@ func InitGinServer(config config.Config, engin *gin.Engine) error {
 	}
 
 	authHandler := handler.NewUserHandler(clind.Clind, engin)
+	authAdminHandler := handler.NewAdminHandler(clind.Clind, engin)
 
-	routes_auth.RouteAuth(engin, authHandler)
+	routes_auth.RouteAuthUser(engin, authHandler)
+	routes_auth.RouteAuthAdmin(engin, authAdminHandler)
 
 	return nil
 }

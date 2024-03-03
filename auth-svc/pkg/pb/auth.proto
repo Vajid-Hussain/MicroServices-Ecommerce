@@ -7,6 +7,8 @@ option go_package = "./pkg/pb/";
 service AuthService{
     rpc Sighup (SignupRequest) returns (SignupResponse) {}
     rpc OtpVerifiction (OtpRequest) returns (OtpResponse) {}
+    rpc UserLogin (loginRequest) returns (loginResponse) {}
+    rpc AdminLogin (adminLoginRequest) returns (adminLoginResponse) {}
 }
 
 message SignupRequest{
@@ -39,4 +41,24 @@ message OtpRequest{
 message OtpResponse{
     string accessToken =1;
     string refreshToken =2;
+}
+
+message loginRequest {
+    string phone = 1;
+    string password = 2;
+}
+
+message loginResponse{
+    string accessToken =1;
+    string refreshToken =2;
+}
+
+message adminLoginRequest{
+    string email = 1;
+    string password = 2;
+
+}
+
+message adminLoginResponse{
+    string token = 1;
 }

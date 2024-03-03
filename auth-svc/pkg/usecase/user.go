@@ -101,3 +101,41 @@ func (u *userUseCase) VerifyOtp(otpConstrain requestmodel_auth_svc.OtpVerificati
 
 	return otpResponse, nil
 }
+
+func (u *userUseCase) UserLogin(loginCredential requestmodel_auth_svc.UserLogin) (responsemodel_auth_svc.UserLogin, error) {
+	var resUserLogin responsemodel_auth_svc.UserLogin
+
+	password, err := u.repo.FetchPasswordUsingPhone(loginCredential.Phone)
+	if err != nil {
+		resUserLogin.Error = err.Error()
+		return resUserLogin, err
+	}
+
+	err = helper_auth_svc.CompairPassword(password, loginCredential.Password)
+	if err != nil {
+		resUserLogin.Error = err.Error()
+		return resUserLogin, err
+	}
+
+	userID, err := u.repo.FetchUserID(loginCredential.Phone)
+	if err != nil {
+		resUserLogin.Error = err.Error()
+		return resUserLogin, err
+	}
+
+	accessToken, err := service_auth_svc.GenerateAcessToken(u.token.UserSecurityKey, userID)
+	if err != nil {
+		resUserLogin.Error = err.Error()
+		return resUserLogin, err
+	}
+
+	refreshToken, err := service_auth_svc.GenerateRefreshToken(u.token.UserSecurityKey)
+	if err != nil {
+		resUserLogin.Error = err.Error()
+	}
+
+	resUserLogin.AccessToken = accessToken
+	resUserLogin.RefreshToken = refreshToken
+
+	return resUserLogin, nil
+}

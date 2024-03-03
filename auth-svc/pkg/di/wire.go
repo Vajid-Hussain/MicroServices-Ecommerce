@@ -21,7 +21,11 @@ func InitializeServer(config config_auth_svc.Config) *server_auth_svc.UserServic
 
 	userRepository := repository_auth_svc.NewUserRepository(db)
 	userUseCase := usecase_auth_svc.NesUserUseCase(userRepository, config.Token)
-	userServer := server_auth_svc.NewUserService(userUseCase)
+
+	adminRepository := repository_auth_svc.NewAdminRepository(db)
+	adminUseCase := usecase_auth_svc.NewAdminUseCase(adminRepository, &config.Token)
+
+	userServer := server_auth_svc.NewUserService(userUseCase, adminUseCase)
 
 	return userServer
 

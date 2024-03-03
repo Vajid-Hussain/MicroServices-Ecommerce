@@ -13,3 +13,13 @@ type OtpVerification struct {
 	Otp             string `json:"otp"   validate:"len=6"`
 	TemporvaryToken string `validation:"required"`
 }
+
+type UserLogin struct {
+	Phone    string `json:"phone"    validate:"len=10,number"`
+	Password string `json:"password" validate:"required,min=4"`
+}
+
+type AdminLoginData struct {
+    Email    string `json:"email"    validate:"email"`
+    Password string `json:"password" validate:"min=4"`
+}

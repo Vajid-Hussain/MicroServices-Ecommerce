@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/pb"
-	requestmodel "github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/requestModel"
+	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/requestModel"
 )
 
 type UserHandler struct {
@@ -20,7 +20,7 @@ func NewUserHandler(clind pb.AuthServiceClient, engin *gin.Engine) *UserHandler 
 }
 
 func (h *UserHandler) UserSignup(ctx *gin.Context) {
-	userDetails := requestmodel.UserDetails{}
+	userDetails := requestmodel_auth_svc.UserDetails{}
 	err := ctx.BindJSON(&userDetails)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
@@ -42,7 +42,7 @@ func (h *UserHandler) UserSignup(ctx *gin.Context) {
 }
 
 func (h *UserHandler) OtpVerification(c *gin.Context) {
-	var otpData requestmodel.OtpVerification
+	var otpData requestmodel_auth_svc.OtpVerification
 
 	token := c.Request.Header.Get("Authorization")
 
@@ -61,4 +61,18 @@ func (h *UserHandler) OtpVerification(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (h *UserHandler) UserLogin(c *gin.Context) {
+	var loginCredential requestmodel_auth_svc.UserLogin
+	if err := c.BindJSON(&loginCredential); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 
+	result, err := h.clind.UserLogin(context.Background(), &pb.LoginRequest{
+		Phone:    loginCredential.Phone,
+		Password: loginCredential.Password,
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+	c.JSON(http.StatusOK, result)
+}

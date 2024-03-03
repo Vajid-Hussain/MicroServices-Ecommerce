@@ -21,3 +21,11 @@ type OtpValidation struct {
     AccessToken  string `json:"accesstoken,omitempty"`
     RefreshToken string `json:"refreshtoken,omitempty"`
 }
+
+type UserLogin struct {
+	Phone        string `json:"phone,omitempty"`
+	Password     string `json:"password,omitempty"`
+	AccessToken  string `json:"accesstoken,omitempty"`
+	RefreshToken string `json:"refreshtoken,omitempty"`
+	Error        string `json:"error,omitempty"`
+}

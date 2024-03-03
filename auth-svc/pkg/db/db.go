@@ -7,6 +7,7 @@ import (
 	_ "github.com/lib/pq"
 	config_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/config"
 	domain_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/domain"
+	helper_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -46,10 +47,30 @@ func InitDB(config *config_auth_svc.General) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = DB.AutoMigrate(domain_auth_svc.Users{})
+	err = DB.AutoMigrate(domain_auth_svc.Users{},
+		domain_auth_svc.Admin{})
 	if err != nil {
 		return nil, err
 	}
 
+	CheckAndCreateAdmin(DB)
+
 	return DB, nil
+}
+
+func CheckAndCreateAdmin(DB *gorm.DB) {
+	var count int
+	var (
+		Name     = "mobileMart"
+		Email    = "mobilemart@gmail.com"
+		Password = "buyMobiles"
+	)
+	HashedPassword := helper_auth_svc.HashPassword(Password)
+
+	query := "SELECT COUNT(*) FROM admins"
+	DB.Raw(query).Row().Scan(&count)
+	if count <= 0 {
+		query = "INSERT INTO admins(name, email, password) VALUES(?, ?, ?)"
+		DB.Exec(query, Name, Email, HashedPassword).Row().Err()
+	}
 }

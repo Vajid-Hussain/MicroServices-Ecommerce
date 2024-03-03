@@ -9,3 +9,10 @@ type Users struct {
 	ReferalCode string
 	Status      string `gorm:"default:pending"`
 }
+
+
+type Admin struct {
+	Name     string
+	Email    string `gorm:"primary key"`
+	Password string
+}

@@ -10,5 +10,6 @@ type IuserRepository interface {
 	IsUserExist(string) int
 	FetchUserID(string) (string, error)
 	ChangeUserStatusActive(string) error
+	FetchPasswordUsingPhone( string) (string, error)
 
 }

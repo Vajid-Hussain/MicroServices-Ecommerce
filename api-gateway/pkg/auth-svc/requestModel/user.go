@@ -1,6 +1,5 @@
 package requestmodel_auth_svc
 
-
 type UserDetails struct {
 	Id              string `json:"id"`
 	Name            string `json:"name"           validate:"required"`
@@ -11,5 +10,15 @@ type UserDetails struct {
 }
 
 type OtpVerification struct {
-    Otp string `json:"otp"   validate:"len=6"`
+	Otp string `json:"otp"   validate:"len=6"`
+}
+
+type UserLogin struct {
+	Phone    string `json:"phone"    validate:"len=10,number"`
+	Password string `json:"password" validate:"required,min=4"`
+}
+
+type AdminLoginData struct {
+    Email    string `json:"email"    validate:"email"`
+    Password string `json:"password" validate:"min=4"`
 }
