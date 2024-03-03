@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,9 +33,32 @@ func (h *UserHandler) UserSignup(ctx *gin.Context) {
 		Password:        userDetails.Password,
 		ConfirmPassword: userDetails.ConfirmPassword,
 	})
-	if err!=nil{
-		fmt.Println("err: ",err)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	fmt.Println("--", result)
+	ctx.JSON(http.StatusOK, result)
 }
+
+func (h *UserHandler) OtpVerification(c *gin.Context) {
+	var otpData requestmodel.OtpVerification
+
+	token := c.Request.Header.Get("Authorization")
+
+	if err := c.BindJSON(&otpData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	result, err := h.clind.OtpVerifiction(context.Background(), &pb.OtpRequest{
+		Otp:            otpData.Otp,
+		TemperverToken: token,
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+

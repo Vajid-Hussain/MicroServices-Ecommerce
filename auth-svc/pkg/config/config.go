@@ -1,6 +1,8 @@
 package config_auth_svc
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type General struct {
 	Port   string `mapstructure:"PORT"`
@@ -29,12 +31,17 @@ type Config struct {
 
 func InitConfig() (*Config, error) {
 	var c = &Config{}
-	viper.AddConfigPath("./auth-svc/")
+	viper.AddConfigPath("./")
 	viper.SetConfigName("dev")
 	viper.SetConfigType("env")
 	viper.AutomaticEnv()
 
-	err := viper.Unmarshal(&c.Token)
+	err := viper.ReadInConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	err = viper.Unmarshal(&c.Token)
 	if err != nil {
 		return nil, err
 	}

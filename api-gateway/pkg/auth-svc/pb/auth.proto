@@ -6,6 +6,7 @@ option go_package = "./pkg/auth-svc/pb/";
 
 service AuthService{
     rpc Sighup (SignupRequest) returns (SignupResponse) {}
+    rpc OtpVerifiction (OtpRequest) returns (OtpResponse) {}
 }
 
 message SignupRequest{
@@ -28,4 +29,14 @@ message SignupResponse{
     string IsUserExist = 7;
     string ReferalCode = 8;
     uint32 WalletBelance = 9;
+}
+
+message OtpRequest{
+    string otp =1;
+    string temperverToken =2;
+}
+
+message OtpResponse{
+    string accessToken =1;
+    string refreshToken =2;
 }

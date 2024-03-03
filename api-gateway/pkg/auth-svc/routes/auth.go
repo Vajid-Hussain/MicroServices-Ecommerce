@@ -6,8 +6,9 @@ import (
 )
 
 func RouteAuth(engin *gin.Engine, user *handler.UserHandler) {
-	userManagement := engin.Group("/user")
+	userManagement := engin.Group("user")
 	{
-		userManagement.POST("/singup", user.UserSignup)
+		userManagement.POST("/signup", user.UserSignup)
+		userManagement.POST("/otpverification", user.OtpVerification)
 	}
 }

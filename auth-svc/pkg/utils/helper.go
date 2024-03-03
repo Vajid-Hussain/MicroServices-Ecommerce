@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	responsemodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/responsemodel"
 )
 
 // func Pagination(page string, limit string) (int, int, error) {
@@ -37,16 +38,19 @@ import (
 // 	return offSet, limits, nil
 // }
 
-func EasyValidataion(data interface{}) {
+func EasyValidataion(data interface{})[]responsemodel_auth_svc.ValidatonError {
+	var afterErrorCorection []responsemodel_auth_svc.ValidatonError
 	validate := validator.New()
 	err := validate.Struct(data)
 	if err != nil {
 		if ve, ok := err.(validator.ValidationErrors); ok {
 			for _, e := range ve {
-				fmt.Println("---", e.Error(), e.Field(), e.Tag(), e.Param())
+				afterErrorCorection = append(afterErrorCorection, responsemodel_auth_svc.ValidatonError{Error: fmt.Sprint(e.Error(), e.Param())})
+				fmt.Println("---", e.Error())
 			}
 		}
 	}
+	return afterErrorCorection
 }
 
 // func Validation(data interface{}) (*[]responsemodel.Errors, error) {

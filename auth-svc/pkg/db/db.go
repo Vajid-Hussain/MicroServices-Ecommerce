@@ -18,10 +18,27 @@ func InitDB(config *config_auth_svc.General) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	_, err = sql.Exec("create database " + config.DBName)
+	// _, err = sql.Exec("CREATE DATABASE " + config.DBName)
+	// if err != nil {
+	// 	fmt.Println("err ", err)
+	// 	return nil, err
+	// }
+
+	rows, err := sql.Query("SELECT 1 FROM pg_database WHERE datname = 'auth_svc_ecommerce'")
 	if err != nil {
-		fmt.Println("err ", err)
-		return nil, err
+		fmt.Println("Error checking database existence:", err)
+	}
+	defer rows.Close()
+
+	// If the database exists, do nothing
+	if rows.Next() {
+		fmt.Println("Database 'auth_svc_ecommerce' already exists.")
+	} else {
+		// If the database does not exist, create it
+		_, err = sql.Exec("CREATE DATABASE auth_svc_ecommerce")
+		if err != nil {
+			fmt.Println("Error creating database:", err)
+		}
 	}
 
 	DB, err := gorm.Open(postgres.Open(config.DbUrl), &gorm.Config{})

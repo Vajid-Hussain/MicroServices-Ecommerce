@@ -8,4 +8,7 @@ import (
 type IuserRepository interface {
 	CreateUser(*requestmodel_auth_svc.UserDetails) (*responsemodel_auth_svc.SignupData, error)
 	IsUserExist(string) int
+	FetchUserID(string) (string, error)
+	ChangeUserStatusActive(string) error
+
 }

@@ -1,4 +1,4 @@
-package requestmodel
+package requestmodel_auth_svc
 
 
 type UserDetails struct {
@@ -8,4 +8,8 @@ type UserDetails struct {
 	Phone           string `json:"phone"          validate:"len=10"`
 	Password        string `json:"password,omitempty"       validate:"min=4"`
 	ConfirmPassword string `json:"confirmpassword,omitempty" validate:"eqfield=Password"`
+}
+
+type OtpVerification struct {
+    Otp string `json:"otp"   validate:"len=6"`
 }

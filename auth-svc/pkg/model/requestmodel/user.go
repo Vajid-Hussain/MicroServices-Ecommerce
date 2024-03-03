@@ -8,3 +8,8 @@ type UserDetails struct {
 	Password        string `json:"password,omitempty"       validate:"min=4"`
 	ConfirmPassword string `json:"confirmpassword,omitempty" validate:"eqfield=Password"`
 }
+
+type OtpVerification struct {
+	Otp             string `json:"otp"   validate:"len=6"`
+	TemporvaryToken string `validation:"required"`
+}

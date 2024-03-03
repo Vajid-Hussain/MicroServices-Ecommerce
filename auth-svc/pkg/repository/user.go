@@ -1,6 +1,7 @@
 package repository_auth_svc
 
 import (
+	"errors"
 	"fmt"
 
 	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/requestmodel"
@@ -29,6 +30,7 @@ func (d *userRepository) IsUserExist(phone string) int {
 }
 
 func (d *userRepository) CreateUser(userDetails *requestmodel_auth_svc.UserDetails) (*responsemodel_auth_svc.SignupData, error) {
+	fmt.Println("--callded user adde.dc")
 	var userData responsemodel_auth_svc.SignupData
 	query := "INSERT INTO users (name, email, phone, password) VALUES($1, $2, $3, $4) RETURNING *"
 	result := d.DB.Raw(query, userDetails.Name, userDetails.Email, userDetails.Phone, userDetails.Password).Scan(&userData)
@@ -36,4 +38,28 @@ func (d *userRepository) CreateUser(userDetails *requestmodel_auth_svc.UserDetai
 		return nil, result.Error
 	}
 	return &userData, nil
+}
+
+func (d *userRepository) FetchUserID(phone string) (string, error) {
+	var userID string
+
+	query := "SELECT id FROM users WHERE phone=? AND status='active'"
+	data := d.DB.Raw(query, phone).Row()
+
+	if err := data.Scan(&userID); err != nil {
+		return "", errors.New("fetching user id cause error")
+	}
+	return userID, nil
+}
+
+func (d *userRepository) ChangeUserStatusActive(phone string) error {
+	fmt.Println(phone)
+	query := "UPDATE users SET status = 'active' WHERE phone = ?"
+	result := d.DB.Exec(query, phone)
+	if result.Error != nil {
+
+		return errors.New("no user Exist , phone number is wrong")
+	} else {
+		return nil
+	}
 }
