@@ -6,16 +6,20 @@ import (
 	config_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/config"
 	db_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/db"
 	repository_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/repository"
+	server_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/server"
 	usecase_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/usecase"
 )
 
-func InitializeServer(config config_auth_svc.Config) {
-	db, err := db_auth_svc.InitDB(&config.DB)
+func InitializeServer(config config_auth_svc.Config) *server_auth_svc.UserService {
+	db, err := db_auth_svc.InitDB(&config.General)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err," fatal because db connection error")
 	}
+	
+	userRepository := repository_auth_svc.NewUserRepository(db)
+	userUseCase := usecase_auth_svc.NesUserUseCase(userRepository, config.Token)
+	userServer := server_auth_svc.NewUserService(userUseCase)
 
-	userRepository:= repository_auth_svc.NewUserRepository(db)
-	userUseCase:= usecase_auth_svc.NesUserUseCase(userRepository, config.Token)
+	return userServer
 
 }

@@ -2,7 +2,9 @@ package db_auth_svc
 
 import (
 	"database/sql"
+	"fmt"
 
+	_ "github.com/lib/pq"
 	config_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/config"
 	domain_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/domain"
 	"gorm.io/driver/postgres"
@@ -10,7 +12,7 @@ import (
 )
 
 func InitDB(config *config_auth_svc.General) (*gorm.DB, error) {
-	connectionString := "user= vajid password=5432 host= localhost"
+	connectionString := "user=postgres password=123 host=localhost"
 	sql, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return nil, err
@@ -18,6 +20,7 @@ func InitDB(config *config_auth_svc.General) (*gorm.DB, error) {
 
 	_, err = sql.Exec("create database " + config.DBName)
 	if err != nil {
+		fmt.Println("err ", err)
 		return nil, err
 	}
 

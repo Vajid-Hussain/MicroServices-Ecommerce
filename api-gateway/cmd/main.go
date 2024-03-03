@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
-	"github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/clind"
-	"github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/handler"
-	"github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/server"
+	"github.com/gin-gonic/gin"
+	server_auth "github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/server"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/config"
 )
 
@@ -15,16 +15,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	clind, err := clind.InitServiceClind(config)
-	if err != nil {
-		log.Fatalln("Dial port is not not correct cross check")
-	}
+	engin := gin.Default()
 
-	engin, err := server.InitGinServer(*config)
+	err = server_auth.InitGinServer(*config, engin)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	handler.NewUserHandler(clind.Clind, engin)
-
+	err = engin.Run(config.Port)
+	if err != nil {
+		fmt.Println("err:", err)
+	}
 }

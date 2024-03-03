@@ -7,7 +7,7 @@ import (
 	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/requestmodel"
 	responsemodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/responsemodel"
 	interfaceRepository "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/repository/interface"
-	service_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/service"
+	service_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/services"
 	interfaceUseCase_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/usecase/interface"
 	helper_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/utils"
 )

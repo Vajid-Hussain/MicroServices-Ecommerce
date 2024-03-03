@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,11 +27,16 @@ func (h *UserHandler) UserSignup(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	result,err:= h.clind.Sighup(context.Background(), &pb.SignupRequest{
-		Name: userDetails.Name,
-		Email: userDetails.Email,
-		Phone: userDetails.Phone,
-		Password: userDetails.Password,
+	result, err := h.clind.Sighup(context.Background(), &pb.SignupRequest{
+		Name:            userDetails.Name,
+		Email:           userDetails.Email,
+		Phone:           userDetails.Phone,
+		Password:        userDetails.Password,
 		ConfirmPassword: userDetails.ConfirmPassword,
 	})
+	if err!=nil{
+		fmt.Println("err: ",err)
+	}
+
+	fmt.Println("--", result)
 }

@@ -1,6 +1,8 @@
 package clind
 
 import (
+	"fmt"
+
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/pb"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/config"
 	"google.golang.org/grpc"
@@ -12,6 +14,7 @@ type AuthClind struct {
 }
 
 func InitServiceClind(url *config.Config) (*AuthClind, error) {
+	fmt.Println("---", url)
 	cc, err := grpc.Dial(url.AuthPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err

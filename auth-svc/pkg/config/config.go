@@ -21,14 +21,14 @@ type OTP struct {
 	ServiceSid string `mapstructure:"Service_SID"`
 }
 
-type Config struct{
-	Otp OTP
-	Token Token
-	DB General 
+type Config struct {
+	Otp     OTP
+	Token   Token
+	General General
 }
 
 func InitConfig() (*Config, error) {
-	var c =&Config{}
+	var c = &Config{}
 	viper.AddConfigPath("./auth-svc/")
 	viper.SetConfigName("dev")
 	viper.SetConfigType("env")
@@ -39,7 +39,7 @@ func InitConfig() (*Config, error) {
 		return nil, err
 	}
 
-	err = viper.Unmarshal(&c.DB)
+	err = viper.Unmarshal(&c.General)
 	if err != nil {
 		return nil, err
 	}
