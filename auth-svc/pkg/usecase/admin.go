@@ -1,8 +1,6 @@
 package usecase_auth_svc
 
 import (
-	"fmt"
-
 	config_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/config"
 	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/requestmodel"
 	responsemodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/responsemodel"
@@ -10,6 +8,7 @@ import (
 	service_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/services"
 	interfaceUseCase_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/usecase/interface"
 	helper_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/utils"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type adminUsecase struct {
@@ -23,7 +22,6 @@ func NewAdminUseCase(adminRepository interfaceRepository_auth_svc.IAdminReposito
 }
 
 func (r *adminUsecase) AdminLogin(adminData *requestmodel_auth_svc.AdminLoginData) (*responsemodel_auth_svc.AdminLoginRes, error) {
-	fmt.Println("==============================")
 	var adminLoginRes responsemodel_auth_svc.AdminLoginRes
 
 	HashedPassword, err := r.repo.GetPassword(adminData.Email)
@@ -43,4 +41,12 @@ func (r *adminUsecase) AdminLogin(adminData *requestmodel_auth_svc.AdminLoginDat
 
 	adminLoginRes.Token = token
 	return &adminLoginRes, nil
+}
+
+func (u *adminUsecase) VerifyAdminToken(token string) (*emptypb.Empty, error) {
+	err := service_auth_svc.VerifyRefreshToken(token, u.tokenSecurityKey.AdminSecurityKey)
+	if err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
 }

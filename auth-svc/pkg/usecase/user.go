@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-
 	config_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/config"
 	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/requestmodel"
 	responsemodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/responsemodel"
@@ -139,3 +138,18 @@ func (u *userUseCase) UserLogin(loginCredential requestmodel_auth_svc.UserLogin)
 
 	return resUserLogin, nil
 }
+
+func (u *userUseCase) VerifyUserToken(accessToken, refreshToken string) (string, error) {
+	id, err := service_auth_svc.VerifyAcessToken(accessToken, u.token.UserSecurityKey)
+	if err != nil {
+		return "", err
+	}
+
+	err = service_auth_svc.VerifyRefreshToken(refreshToken, u.token.UserSecurityKey)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+

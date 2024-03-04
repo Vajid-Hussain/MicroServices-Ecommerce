@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 package auth;
+import "google/protobuf/empty.proto";
+
 
 option go_package = "./pkg/auth-svc/pb/";
 
@@ -9,6 +11,8 @@ service AuthService{
     rpc OtpVerifiction (OtpRequest) returns (OtpResponse) {}
     rpc UserLogin (loginRequest) returns (loginResponse) {}
     rpc AdminLogin (adminLoginRequest) returns (adminLoginResponse) {}
+    rpc ValidateUserToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
+    rpc ValidateAdminToken (ValidateAdminTokenRequest) returns (google.protobuf.Empty){}
 }
 
 message SignupRequest{
@@ -61,4 +65,17 @@ message adminLoginRequest{
 
 message adminLoginResponse{
     string token = 1;
+}
+
+message ValidateTokenRequest{
+    string accessToken =1;
+    string refreshToken =2;
+}
+
+message ValidateTokenResponse{
+    string userID =1;
+}
+
+message ValidateAdminTokenRequest{
+    string token =1;
 }

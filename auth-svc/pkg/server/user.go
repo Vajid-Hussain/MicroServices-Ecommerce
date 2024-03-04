@@ -8,6 +8,7 @@ import (
 	"github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/pb"
 	interfaceUseCase_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/usecase/interface"
 	helper_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/utils"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type UserService struct {
@@ -134,4 +135,22 @@ func (u *UserService) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest)
 	return &pb.AdminLoginResponse{
 		Token: result.Token,
 	}, nil
+}
+
+func (u *UserService) ValidateUserToken(ctx context.Context, req *pb.ValidateTokenRequest) (*pb.ValidateTokenResponse, error) {
+
+	accessToken := req.AccessToken
+	refreshToken := req.RefreshToken
+	id, err := u.useCase.VerifyUserToken(accessToken, refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ValidateTokenResponse{
+		UserID: id,
+	}, nil
+}
+
+func (u *UserService) ValidateAdminToken(ctx context.Context, req *pb.ValidateAdminTokenRequest) (*emptypb.Empty, error) {
+	return u.adminUseCase.VerifyAdminToken(req.Token)
 }

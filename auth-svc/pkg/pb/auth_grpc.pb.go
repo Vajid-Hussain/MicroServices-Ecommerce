@@ -8,6 +8,7 @@ package pb
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -19,10 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_Sighup_FullMethodName         = "/auth.AuthService/Sighup"
-	AuthService_OtpVerifiction_FullMethodName = "/auth.AuthService/OtpVerifiction"
-	AuthService_UserLogin_FullMethodName      = "/auth.AuthService/UserLogin"
-	AuthService_AdminLogin_FullMethodName     = "/auth.AuthService/AdminLogin"
+	AuthService_Sighup_FullMethodName             = "/auth.AuthService/Sighup"
+	AuthService_OtpVerifiction_FullMethodName     = "/auth.AuthService/OtpVerifiction"
+	AuthService_UserLogin_FullMethodName          = "/auth.AuthService/UserLogin"
+	AuthService_AdminLogin_FullMethodName         = "/auth.AuthService/AdminLogin"
+	AuthService_ValidateUserToken_FullMethodName  = "/auth.AuthService/ValidateUserToken"
+	AuthService_ValidateAdminToken_FullMethodName = "/auth.AuthService/ValidateAdminToken"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -33,6 +36,8 @@ type AuthServiceClient interface {
 	OtpVerifiction(ctx context.Context, in *OtpRequest, opts ...grpc.CallOption) (*OtpResponse, error)
 	UserLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
+	ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
+	ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type authServiceClient struct {
@@ -79,6 +84,24 @@ func (c *authServiceClient) AdminLogin(ctx context.Context, in *AdminLoginReques
 	return out, nil
 }
 
+func (c *authServiceClient) ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error) {
+	out := new(ValidateTokenResponse)
+	err := c.cc.Invoke(ctx, AuthService_ValidateUserToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, AuthService_ValidateAdminToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -87,6 +110,8 @@ type AuthServiceServer interface {
 	OtpVerifiction(context.Context, *OtpRequest) (*OtpResponse, error)
 	UserLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
+	ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
+	ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*empty.Empty, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -105,6 +130,12 @@ func (UnimplementedAuthServiceServer) UserLogin(context.Context, *LoginRequest) 
 }
 func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
+}
+func (UnimplementedAuthServiceServer) ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateUserToken not implemented")
+}
+func (UnimplementedAuthServiceServer) ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateAdminToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -191,6 +222,42 @@ func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ValidateUserToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ValidateUserToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ValidateUserToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ValidateUserToken(ctx, req.(*ValidateTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ValidateAdminToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateAdminTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ValidateAdminToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ValidateAdminToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ValidateAdminToken(ctx, req.(*ValidateAdminTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +280,14 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AdminLogin",
 			Handler:    _AuthService_AdminLogin_Handler,
+		},
+		{
+			MethodName: "ValidateUserToken",
+			Handler:    _AuthService_ValidateUserToken_Handler,
+		},
+		{
+			MethodName: "ValidateAdminToken",
+			Handler:    _AuthService_ValidateAdminToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
