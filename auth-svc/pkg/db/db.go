@@ -36,7 +36,7 @@ func InitDB(config *config_auth_svc.General) (*gorm.DB, error) {
 		fmt.Println("Database 'auth_svc_ecommerce' already exists.")
 	} else {
 		// If the database does not exist, create it
-		_, err = sql.Exec("CREATE DATABASE auth_svc_ecommerce")
+		_, err = sql.Exec("CREATE DATABASE "+config.DBName)
 		if err != nil {
 			fmt.Println("Error creating database:", err)
 		}

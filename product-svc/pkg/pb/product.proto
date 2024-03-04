@@ -1,3 +1,18 @@
 syntax = "proto3";
 
-package  "";
+package product;
+
+option go_package = "./pkg/pb";
+
+service ProductService{
+    rpc CreateCatogory (createCategoryRequest) returns (createCatogoryResponse) {}
+}
+
+message createCategoryRequest{
+    string name =1;
+}
+
+message createCatogoryResponse{
+    string id =1;
+    string name =2;
+}
