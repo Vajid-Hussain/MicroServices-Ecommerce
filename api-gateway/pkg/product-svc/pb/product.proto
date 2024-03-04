@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "./pkg/product-svc/pb";
+
+service ProductService{
+    rpc CreateCatogory (createCategoryRequest) returns (createCatogoryResponse) {}
+    rpc GetAllCategory (GetAllCategoryRequest) returns (GetAllCategoryResponse) {}
+    rpc CreateBrand (createBrandRequest) returns (createBrandResponse) {}
+    rpc GetAllBrand (getAllBrandRequest) returns (getAllBrandResponse) {}
+}
+
+message createCategoryRequest{
+    string name =1;
+}
+
+message createCatogoryResponse{
+    string id =1;
+    string name =2;
+}
+
+message GetAllCategoryRequest{
+    string ofset =1;
+    string limit =2;
+}
+
+message GetAllCategoryResponse{
+    repeated createCatogoryResponse categories =1;
+}
+
+message createBrandRequest{
+    string name = 1;
+}
+
+message createBrandResponse{
+    string name =1;
+    string id =2;
+}
+
+message getAllBrandRequest {
+    string offset=1;
+    string limit=2;
+}
+
+message getAllBrandResponse{
+    repeated createBrandResponse brands =1;
+}

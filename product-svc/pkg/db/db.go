@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/lib/pq"
 	config_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/config"
+	domain_products_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,8 +17,8 @@ func InitDB(config *config_product_svc.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("---", config)
-	rows, err := sql.Query("SELECT 1 FROM pg_database WHERE datname = '" + config.DBName+"'")
+
+	rows, err := sql.Query("SELECT 1 FROM pg_database WHERE datname = '" + config.DBName + "'")
 	if err != nil {
 		fmt.Println("Error checking database existence:", err)
 	}
@@ -34,17 +35,17 @@ func InitDB(config *config_product_svc.Config) (*gorm.DB, error) {
 		}
 	}
 
-	fmt.Println("==========",config.DBUrl)
 	DB, err := gorm.Open(postgres.Open(config.DBUrl), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	// err = DB.AutoMigrate(domain_auth_svc.Users{},
-	// 	domain_auth_svc.Admin{})
-	// if err != nil {
-	// 	return nil, err
-	// }
+	err = DB.AutoMigrate(domain_products_svc.Brand{},
+		domain_products_svc.Category{},
+		domain_products_svc.Inventories{})
+	if err != nil {
+		return nil, err
+	}
 
 	return DB, nil
 }

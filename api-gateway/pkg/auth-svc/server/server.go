@@ -10,11 +10,11 @@ import (
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/config"
 )
 
-func InitGinServer(config config.Config, engin *gin.Engine) error {
+func InitAuthClind(config config.Config, engin *gin.Engine) (*handler.Middlewire,error) {
 
 	clind, err := clind.InitServiceClind(&config)
 	if err != nil {
-		log.Fatalln("Dial port is not not correct cross check")
+		log.Fatalln("Dial port is not correct cross check")
 	}
 
 	authHandler := handler.NewUserHandler(clind.Clind, engin)
@@ -25,5 +25,5 @@ func InitGinServer(config config.Config, engin *gin.Engine) error {
 	routes_auth.RouteAuthAdmin(engin, authAdminHandler, authMiddlewire)
 	routes_auth.RouteAuthUser(engin, authHandler, authMiddlewire)
 
-	return nil
+	return authMiddlewire, nil
 }

@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Port     string `mapstructure:"PORT"`
 	AuthPort string `mapstructure:"AUTH_SVC"`
+	ProductPort string `mapstructure:"PRODUCT_SVC"`
 }
 
 func InitConfig() (*Config, error) {

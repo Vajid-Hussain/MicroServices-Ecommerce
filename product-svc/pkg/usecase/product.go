@@ -18,12 +18,12 @@ func NewCategoryUseCase(repository interfaceRepositoryProductService.ICategoryRe
 
 func (r *categoryUseCase) NewCategory(categoryDetails *requestmodel_product_svc.Category) (*responsemodel_product_svc.CategoryDetails, error) {
 
-	err := r.repo.InsertCategory(categoryDetails)
+	category, err := r.repo.InsertCategory(categoryDetails)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return category, nil
 }
 
 func (r *categoryUseCase) GetAllCategory(page string, limit string) (*[]responsemodel_product_svc.CategoryDetails, error) {
@@ -45,12 +45,12 @@ func (r *categoryUseCase) GetAllCategory(page string, limit string) (*[]response
 
 func (r *categoryUseCase) CreateBrand(brandDetails *requestmodel_product_svc.Brand) (*responsemodel_product_svc.BrandDetails, error) {
 
-	err := r.repo.InsertBrand(brandDetails)
+	brand, err := r.repo.InsertBrand(brandDetails)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return brand, nil
 }
 
 func (r *categoryUseCase) GetAllBrand(page string, limit string) (*[]responsemodel_product_svc.BrandDetails, error) {

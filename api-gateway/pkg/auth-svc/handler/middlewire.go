@@ -33,6 +33,7 @@ func (m *Middlewire) UserAuthMiddlewire(c *gin.Context) {
 	})
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "token is not valid"})
+		c.Abort()
 		return
 	}
 	c.Set("userID", result.UserID)

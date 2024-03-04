@@ -22,4 +22,4 @@ func InitServiceClind(url *config.Config) (*AuthClind, error) {
 		Clind: pb.NewAuthServiceClient(cc),
 	}
 	return &c, nil
-}
+}		

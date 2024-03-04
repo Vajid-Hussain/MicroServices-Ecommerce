@@ -2,6 +2,7 @@ package repository_poduct_svc
 
 import (
 	"errors"
+	"fmt"
 
 	requestmodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/requestmodel"
 	responsemodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/responsemodel"
@@ -17,13 +18,14 @@ func NewCategoryRepository(db *gorm.DB) interfaceRepositoryProductService.ICateg
 	return &categoryRepository{DB: db}
 }
 
-func (d *categoryRepository) InsertCategory(categoryDetails *requestmodel_product_svc.Category) error {
-	query := "INSERT INTO categories(name) VALUES(?)"
-	err := d.DB.Exec(query, categoryDetails.Name).Error
+func (d *categoryRepository) InsertCategory(categoryDetails *requestmodel_product_svc.Category) (*responsemodel_product_svc.CategoryDetails, error) {
+	var category responsemodel_product_svc.CategoryDetails
+	query := "INSERT INTO categories(name) VALUES(?) RETURNING *"
+	err := d.DB.Raw(query, categoryDetails.Name).Scan(&category).Error
 	if err != nil {
-		return errors.New("canot make a new Category")
+		return nil, errors.New("canot make a new Category")
 	}
-	return nil
+	return &category, nil
 }
 
 func (d *categoryRepository) GetAllCategory(offSet int, limit int) (*[]responsemodel_product_svc.CategoryDetails, error) {
@@ -39,13 +41,15 @@ func (d *categoryRepository) GetAllCategory(offSet int, limit int) (*[]responsem
 }
 
 // Brand
-func (d *categoryRepository) InsertBrand(name *requestmodel_product_svc.Brand) error {
-	query := "INSERT INTO brands(name) VALUES(?)"
-	err := d.DB.Exec(query, name.Name).Error
+func (d *categoryRepository) InsertBrand(name *requestmodel_product_svc.Brand) (*responsemodel_product_svc.BrandDetails, error) {
+	fmt.Println("--", name)
+	var brands responsemodel_product_svc.BrandDetails
+	query := "INSERT INTO brands(name) VALUES(?) RETURNING *"
+	err := d.DB.Raw(query, name.Name).Scan(&brands).Error
 	if err != nil {
-		return errors.New("can't make a new brand")
+		return nil, errors.New("can't make a new brand alrady exit, come with new one")
 	}
-	return nil
+	return &brands, nil
 }
 
 func (d *categoryRepository) GetAllBrand(offSet int, limit int) (*[]responsemodel_product_svc.BrandDetails, error) {
