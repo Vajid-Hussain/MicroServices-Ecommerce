@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	_ "github.com/lib/pq"
 	config_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,8 +16,8 @@ func InitDB(config *config_product_svc.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	rows, err := sql.Query("SELECT 1 FROM pg_database WHERE datname = "+ config.DBName)
+	fmt.Println("---", config)
+	rows, err := sql.Query("SELECT 1 FROM pg_database WHERE datname = '" + config.DBName+"'")
 	if err != nil {
 		fmt.Println("Error checking database existence:", err)
 	}
@@ -24,7 +25,7 @@ func InitDB(config *config_product_svc.Config) (*gorm.DB, error) {
 
 	// If the database exists, do nothing
 	if rows.Next() {
-		fmt.Println("Database"+config.DBName+" already exists.")
+		fmt.Println("Database" + config.DBName + " already exists.")
 	} else {
 		// If the database does not exist, create it
 		_, err = sql.Exec("CREATE DATABASE " + config.DBName)
@@ -33,6 +34,7 @@ func InitDB(config *config_product_svc.Config) (*gorm.DB, error) {
 		}
 	}
 
+	fmt.Println("==========",config.DBUrl)
 	DB, err := gorm.Open(postgres.Open(config.DBUrl), &gorm.Config{})
 	if err != nil {
 		return nil, err

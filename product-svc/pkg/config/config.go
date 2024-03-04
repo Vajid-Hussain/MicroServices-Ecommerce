@@ -4,7 +4,7 @@ import "github.com/spf13/viper"
 
 type Config struct {
 	Port string `mapstructure:"PORT"`
-	DBName string `mapstructure:"products_svc"`
+	DBName string `mapstructure:"DBNAME"`
 	DBUrl string `mapstructure:"DBURL"`
 }
 
