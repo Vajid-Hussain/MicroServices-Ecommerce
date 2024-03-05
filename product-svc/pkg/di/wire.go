@@ -15,7 +15,7 @@ func InitializeServer(config *config_product_svc.Config) (*server_product_svc.Pr
 	}
 
 	categoryRepository := repository_poduct_svc.NewCategoryRepository(db)
-	categoryUseCase := usecase_prodcut_svc.NewCategoryUseCase(categoryRepository)
+	categoryUseCase := usecase_prodcut_svc.NewCategoryUseCase(categoryRepository, config)
 	server := server_product_svc.NewProductHandler(categoryUseCase)
 
 	return server, nil

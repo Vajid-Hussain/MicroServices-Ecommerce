@@ -9,6 +9,7 @@ service ProductService{
     rpc GetAllCategory (GetAllCategoryRequest) returns (GetAllCategoryResponse) {}
     rpc CreateBrand (createBrandRequest) returns (createBrandResponse) {}
     rpc GetAllBrand (getAllBrandRequest) returns (getAllBrandResponse) {}
+    rpc AddProduct (AddProductRequest) returns (AddProductResponse) {}
 }
 
 message createCategoryRequest{
@@ -45,4 +46,44 @@ message getAllBrandRequest {
 
 message getAllBrandResponse{
     repeated createBrandResponse brands =1;
+}
+
+message AddProductRequest{
+    string productname = 1;
+    string description = 2;
+    uint32 brand_id = 3;
+    uint32 category_id = 4;
+    uint32 mrp = 5;
+    uint32 discount = 6;
+    uint32 units = 7;
+    string os = 8;
+    string cellular_technology = 9;
+    uint32 ram = 10;
+    float screensize = 11;
+    uint32 battery_capacity = 12;
+    string processor = 13;
+    bytes image =14;
+    uint32 saleprice =15;    
+}
+
+message AddProductResponse{
+    uint32 id = 1;
+    string productname = 2;
+    string description = 3;
+    uint32 brand_id = 4;
+    uint32 category_id = 5;
+    uint32 mrp = 6;
+    uint32 discount = 7;
+    uint32 saleprice = 8;
+    uint32 category_discount = 9;
+    uint32 net_discount = 10;
+    uint32 final_price = 11;
+    uint64 units = 12;
+    string os = 13;
+    string cellular_technology = 14;
+    uint32 ram = 15;
+    double screensize = 16;
+    uint32 battery_capacity = 17;
+    string processor = 18;
+    string image_url = 19;
 }

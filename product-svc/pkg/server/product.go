@@ -3,6 +3,7 @@ package server_product_svc
 import (
 	"context"
 	"fmt"
+	"mime/multipart"
 
 	requestmodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/requestmodel"
 	"github.com/vajid-hussain/mobile-mart-microservice-product/pkg/pb"
@@ -102,5 +103,61 @@ func (u *ProductHandler) GetAllBrand(ctx context.Context, req *pb.GetAllBrandReq
 
 	return &pb.GetAllBrandResponse{
 		Brands: endResult,
+	}, nil
+}
+
+func (u *ProductHandler) AddProduct(ctx context.Context, req *pb.AddProductRequest) (*pb.AddProductResponse, error) {
+	var product requestmodel_product_svc.InventoryReq
+
+	product.Batterycapacity = uint(req.BatteryCapacity)
+	product.BrandID = uint(req.BrandId)
+	product.CategoryID = uint(req.CategoryId)
+	product.CellularTechnology = req.CellularTechnology
+	product.Description = req.Description
+	product.Discount = uint(req.Discount)
+	// product.Image = req.Image
+	product.Mrp = uint(req.Mrp)
+	product.Os = req.Os
+	product.Processor = req.Processor
+	product.Productname = req.Productname
+	product.Ram = uint(req.Ram)
+	product.Screensize = float64(req.Screensize)
+	product.Units = uint64(req.Units)
+	product.Saleprice = uint(req.Saleprice)
+
+	filename := "5432345"
+	file := &multipart.FileHeader{
+		Filename: filename,
+		Size:     int64(len(req.Image)),
+	}
+
+	fmt.Println("333", file)
+
+	product.Image = file
+	result, err := u.categoryUseCase.AddInventory(&product)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AddProductResponse{
+		Id:                 uint32(result.ID),
+		Productname:        result.Productname,
+		Description:        product.Description,
+		BrandId:            req.BrandId,
+		CategoryId:         req.CategoryId,
+		Mrp:                uint32(result.Mrp),
+		Discount:           uint32(result.Discount),
+		Saleprice:          uint32(result.Saleprice),
+		CategoryDiscount:   uint32(result.CategoryDiscount),
+		NetDiscount:        uint32(result.NetDiscount),
+		FinalPrice:         uint32(result.FinalPrice),
+		Units:              result.Units,
+		Os:                 result.Os,
+		CellularTechnology: result.CellularTechnology,
+		Ram:                uint32(result.Ram),
+		Screensize:         result.Screensize,
+		BatteryCapacity:    uint32(result.Batterycapacity),
+		Processor:          product.Processor,
+		ImageUrl:           result.ImageURL,
 	}, nil
 }

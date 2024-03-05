@@ -2,6 +2,8 @@ package handler_product_svc
 
 import (
 	"context"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -76,5 +78,59 @@ func (h *ProductHandler) GetAllBrand(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	c.JSON(http.StatusOK, result)
+}
+
+func (h *ProductHandler) AddProduct(c *gin.Context) {
+	var inventoryDetails requestmodel_product_svc_clind.InventoryReq
+
+	if err := c.ShouldBind(&inventoryDetails); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	fmt.Println("--", inventoryDetails)
+
+	image, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	inventoryDetails.Image = image
+
+	fileOpened, err := image.Open()
+	if err != nil {
+		fmt.Println("err", err)
+	}
+	defer fileOpened.Close()
+
+	// Read the contents of the file into a byte slice
+	fileBytes, err := ioutil.ReadAll(fileOpened)
+	if err != nil {
+		fmt.Println("--", err)
+	}
+
+	result, err := h.Clind.AddProduct(context.Background(), &pb.AddProductRequest{
+		Productname:        inventoryDetails.Productname,
+		Description:        inventoryDetails.Description,
+		BrandId:            uint32(inventoryDetails.BrandID),
+		CategoryId:         uint32(inventoryDetails.CategoryID),
+		Mrp:                uint32(inventoryDetails.Mrp),
+		Discount:           uint32(inventoryDetails.Discount),
+		Units:              uint32(inventoryDetails.Units),
+		Os:                 inventoryDetails.Os,
+		CellularTechnology: inventoryDetails.CellularTechnology,
+		Ram:                uint32(inventoryDetails.Ram),
+		Screensize:         float32(inventoryDetails.Screensize),
+		BatteryCapacity:    uint32(inventoryDetails.Batterycapacity),
+		Processor:          inventoryDetails.Processor,
+		Image:              fileBytes,
+		Saleprice:          uint32(inventoryDetails.Saleprice),
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	c.JSON(http.StatusOK, result)
 }

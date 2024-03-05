@@ -10,4 +10,5 @@ type ICategoryRepository interface {
 	GetAllCategory(int, int) (*[]responsemodel_product_svc.CategoryDetails, error)
 	InsertBrand(*requestmodel_product_svc.Brand) (* responsemodel_product_svc.BrandDetails,error)
 	GetAllBrand(int, int) (*[]responsemodel_product_svc.BrandDetails, error)
+	CreateProduct( *requestmodel_product_svc.InventoryReq) (*responsemodel_product_svc.InventoryRes, error) 
 }

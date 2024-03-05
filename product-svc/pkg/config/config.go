@@ -3,9 +3,13 @@ package config_product_svc
 import "github.com/spf13/viper"
 
 type Config struct {
-	Port string `mapstructure:"PORT"`
-	DBName string `mapstructure:"DBNAME"`
-	DBUrl string `mapstructure:"DBURL"`
+	Port            string `mapstructure:"PORT"`
+	DBName          string `mapstructure:"DBNAME"`
+	DBUrl           string `mapstructure:"DBURL"`
+	AccessKeyID     string `mapstructure:"AccessKeyID"`
+	AccessKeySecret string `mapstructure:"AccessKeySecret"`
+	Region          string `mapstructure:"Region"`
+	BucketName      string `mapstructure:"BucketName"`
 }
 
 func InitConfig() (*Config, error) {

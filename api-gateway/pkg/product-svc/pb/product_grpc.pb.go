@@ -23,6 +23,7 @@ const (
 	ProductService_GetAllCategory_FullMethodName = "/product.ProductService/GetAllCategory"
 	ProductService_CreateBrand_FullMethodName    = "/product.ProductService/CreateBrand"
 	ProductService_GetAllBrand_FullMethodName    = "/product.ProductService/GetAllBrand"
+	ProductService_AddProduct_FullMethodName     = "/product.ProductService/AddProduct"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -33,6 +34,7 @@ type ProductServiceClient interface {
 	GetAllCategory(ctx context.Context, in *GetAllCategoryRequest, opts ...grpc.CallOption) (*GetAllCategoryResponse, error)
 	CreateBrand(ctx context.Context, in *CreateBrandRequest, opts ...grpc.CallOption) (*CreateBrandResponse, error)
 	GetAllBrand(ctx context.Context, in *GetAllBrandRequest, opts ...grpc.CallOption) (*GetAllBrandResponse, error)
+	AddProduct(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*AddProductResponse, error)
 }
 
 type productServiceClient struct {
@@ -79,6 +81,15 @@ func (c *productServiceClient) GetAllBrand(ctx context.Context, in *GetAllBrandR
 	return out, nil
 }
 
+func (c *productServiceClient) AddProduct(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*AddProductResponse, error) {
+	out := new(AddProductResponse)
+	err := c.cc.Invoke(ctx, ProductService_AddProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type ProductServiceServer interface {
 	GetAllCategory(context.Context, *GetAllCategoryRequest) (*GetAllCategoryResponse, error)
 	CreateBrand(context.Context, *CreateBrandRequest) (*CreateBrandResponse, error)
 	GetAllBrand(context.Context, *GetAllBrandRequest) (*GetAllBrandResponse, error)
+	AddProduct(context.Context, *AddProductRequest) (*AddProductResponse, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedProductServiceServer) CreateBrand(context.Context, *CreateBra
 }
 func (UnimplementedProductServiceServer) GetAllBrand(context.Context, *GetAllBrandRequest) (*GetAllBrandResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllBrand not implemented")
+}
+func (UnimplementedProductServiceServer) AddProduct(context.Context, *AddProductRequest) (*AddProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddProduct not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 
@@ -191,6 +206,24 @@ func _ProductService_GetAllBrand_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_AddProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).AddProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_AddProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).AddProduct(ctx, req.(*AddProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllBrand",
 			Handler:    _ProductService_GetAllBrand_Handler,
+		},
+		{
+			MethodName: "AddProduct",
+			Handler:    _ProductService_AddProduct_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

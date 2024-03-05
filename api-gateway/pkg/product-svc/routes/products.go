@@ -14,10 +14,16 @@ func ProductRoutes(engin *gin.Engine, category *handler_product_svc.ProductHandl
 			categoryManagementent.POST("/", category.CreateCategory)
 			categoryManagementent.GET("", category.GetAllCategory)
 		}
+
 		brandManagementent := engin.Group("/brand")
 		{
 			brandManagementent.POST("/", category.CreateBrand)
 			brandManagementent.GET("", category.GetAllBrand)
+		}
+
+		productManagement:= engin.Group("product")
+		{
+			productManagement.POST("/",category.AddProduct)
 		}
 	}
 }

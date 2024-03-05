@@ -63,3 +63,24 @@ func (d *categoryRepository) GetAllBrand(offSet int, limit int) (*[]responsemode
 
 	return &Brands, nil
 }
+
+func (d *categoryRepository) CreateProduct(inventory *requestmodel_product_svc.InventoryReq) (*responsemodel_product_svc.InventoryRes, error) {
+
+	var insertedData responsemodel_product_svc.InventoryRes
+
+	query := `INSERT INTO inventories (productname, description, brand_id, category_id, mrp, saleprice, units,os, cellular_technology, ram, screensize, Batterycapacity, processor, image_url, discount) VALUES (?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *;`
+	result := d.DB.Raw(query,
+		inventory.Productname, inventory.Description, inventory.BrandID, inventory.CategoryID,
+		inventory.Mrp, inventory.Saleprice, inventory.Units,
+		inventory.Os, inventory.CellularTechnology, inventory.Ram,
+		inventory.Screensize, inventory.Batterycapacity, inventory.Processor, inventory.ImageURL, inventory.Discount,
+	).Scan(&insertedData)
+
+	if result.Error != nil {
+		return nil, errors.New("inventory is not added into database")
+	}
+	if result.RowsAffected == 0 {
+		return nil, errors.New("inventory is not added in database , face some error")
+	}
+	return &insertedData, nil
+}

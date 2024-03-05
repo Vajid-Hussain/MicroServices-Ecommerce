@@ -10,4 +10,5 @@ type ICategoryUseCase interface {
 	GetAllCategory(string, string) (*[]responsemodel_product_svc.CategoryDetails, error)
 	CreateBrand(*requestmodel_product_svc.Brand) (*responsemodel_product_svc.BrandDetails, error)
 	GetAllBrand(string, string) (*[]responsemodel_product_svc.BrandDetails, error)
+	AddInventory( *requestmodel_product_svc.InventoryReq) (*responsemodel_product_svc.InventoryRes, error)
 }
