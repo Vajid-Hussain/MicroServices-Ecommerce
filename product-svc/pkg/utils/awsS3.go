@@ -3,7 +3,6 @@ package helper_product_svc
 import (
 	"bytes"
 	"fmt"
-	"mime/multipart"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/aws/aws-sdk-go/aws"
@@ -34,23 +33,19 @@ func CreateS3Session(sess *session.Session) *s3.S3 {
 	return s3Session
 }
 
-func UploadImageToS3(file *multipart.FileHeader, sess *session.Session) (string, error) {
-	fmt.Println("--", file)
-	image, err := file.Open()
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	defer image.Close()
+func UploadImageToS3(file []byte, sess *session.Session) (string, error) {
+
+	imageReader := bytes.NewReader(file)
 
 	fileName := uuid.New().String()
 
 	uploader := s3manager.NewUploader(sess)
+
 	upload, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("mobile-mart"),
-		Key:    aws.String("product images/" + fileName),
-		Body:   image,
-		ACL:    aws.String("public-read"),
+		Bucket: aws.String("mobile-mart"),                // Bucket name
+		Key:    aws.String("product images/" + fileName), // S3 object key
+		Body:   imageReader,                              // Reader containing the image data
+		ACL:    aws.String("public-read"),                // ACL for the uploaded object
 	})
 	if err != nil {
 		return "", err

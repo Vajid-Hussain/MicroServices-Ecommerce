@@ -28,3 +28,9 @@ type InventoryReq struct {
 	Image              *multipart.FileHeader `form:"image" swaggerignore:"true"`
 	// ImageURL           string                `swaggerignore:"true"`
 }
+
+type Cart struct {
+	UserID      string `json:"cartid userid" swaggerignore:"true"`
+	InventoryID string `json:"inventoryid" validate:"required,number"`
+	Quantity    uint   `json:"quantity" swaggerignore:"true"`
+}

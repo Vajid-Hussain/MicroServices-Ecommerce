@@ -6,6 +6,7 @@ import (
 
 	requestmodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/requestmodel"
 	responsemodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/responsemodel"
+	resCustomError_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/responsemodel/custom_error"
 	interfaceRepositoryProductService "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/repository/interface"
 	"gorm.io/gorm"
 )
@@ -84,3 +85,74 @@ func (d *categoryRepository) CreateProduct(inventory *requestmodel_product_svc.I
 	}
 	return &insertedData, nil
 }
+
+func (d *categoryRepository) GetInventory(offSet int, limit int) (*[]responsemodel_product_svc.InventoryShowcase, error) {
+	var inventory []responsemodel_product_svc.InventoryShowcase
+
+	query := "SELECT * FROM inventories ORDER BY inventories.id OFFSET ? LIMIT ?"
+	err := d.DB.Raw(query, offSet, limit).Scan(&inventory).Error
+	if err != nil {
+		return nil, errors.New("can't get inventory data from db")
+	}
+
+	return &inventory, nil
+}
+
+
+//cart
+
+func (d *categoryRepository) IsInventoryExistInCart(inventoryID string, userID string) (int, error) {
+	var inventoryCount int
+
+	query := "SELECT count(*) FROM carts WHERE inventory_id=? AND user_id=? AND status='active' "
+	result := d.DB.Raw(query, inventoryID, userID).Scan(&inventoryCount)
+	if result.Error != nil {
+		return 0, errors.New("face some issue while finding inventory is exist in cart")
+	}
+	return inventoryCount, nil
+}
+
+func (d *categoryRepository) InsertToCart(cart *requestmodel_product_svc.Cart) (*responsemodel_product_svc.Cart, error) {
+	var insertCart *responsemodel_product_svc.Cart
+	query := "INSERT INTO carts (user_id, inventory_id, quantity) VALUES (?, ?,  ?)   RETURNING *;"
+	result := d.DB.Raw(query, cart.UserID, cart.InventoryID, cart.Quantity).Scan(&insertCart)
+
+	if result.Error != nil {
+		return nil, errors.New("face some issue while inventory insert to cart ")
+	}
+	if result.RowsAffected == 0 {
+
+		return nil, resCustomError_product_svc.ErrNoRowAffected
+	}
+	return insertCart, nil
+}
+
+
+// func (d *cartRepository) GetCart(userID string) (*[]responsemodel.CartInventory, error) {
+// 	var cartView *[]responsemodel.CartInventory
+// 	query := "SELECT * FROM carts INNER JOIN inventories ON id=inventory_id LEFT JOIN category_offers ON category_offers.seller_id=inventories.seller_id AND category_offers.category_id=inventories.category_id AND category_offers.status='active' AND category_offers.end_date>now() WHERE carts.user_id=? AND carts.status='active'"
+// 	result := d.DB.Raw(query, userID).Scan(&cartView)
+// 	if result.Error != nil {
+// 		return nil, errors.New("face some issue while  get cart")
+// 	}
+// 	if result.RowsAffected == 0 {
+// 		return nil, errors.New("user have no cart")
+// 	}
+// 	return cartView, nil
+// }
+
+// func (d *cartRepository) GetCartCriteria(userID string) (uint, error) {
+
+// 	var count uint
+// 	query := "SELECT SUM(quantity) FROM carts WHERE user_id=? AND status='active'"
+// 	result := d.DB.Raw(query, userID)
+// 	result.Row().Scan(&count)
+// 	if result.Error != nil {
+// 		return 0, errors.New("face some issue while  get cart")
+// 	}
+// 	if result.RowsAffected == 0 {
+// 		return 0, resCustomError.ErrNoRowAffected
+// 	}
+// 	return count, nil
+// }
+

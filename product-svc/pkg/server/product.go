@@ -3,7 +3,6 @@ package server_product_svc
 import (
 	"context"
 	"fmt"
-	"mime/multipart"
 
 	requestmodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/requestmodel"
 	"github.com/vajid-hussain/mobile-mart-microservice-product/pkg/pb"
@@ -109,13 +108,24 @@ func (u *ProductHandler) GetAllBrand(ctx context.Context, req *pb.GetAllBrandReq
 func (u *ProductHandler) AddProduct(ctx context.Context, req *pb.AddProductRequest) (*pb.AddProductResponse, error) {
 	var product requestmodel_product_svc.InventoryReq
 
+	validationErr := helper_product_svc.EasyValidataion(product)
+	var errorString string
+	if len(validationErr) > 0 {
+		for _, val := range validationErr {
+			errorString += fmt.Errorf(val.Error).Error()
+		}
+	}
+	if len(validationErr) > 0 {
+		return nil, fmt.Errorf(errorString)
+	}
+
 	product.Batterycapacity = uint(req.BatteryCapacity)
 	product.BrandID = uint(req.BrandId)
 	product.CategoryID = uint(req.CategoryId)
 	product.CellularTechnology = req.CellularTechnology
 	product.Description = req.Description
 	product.Discount = uint(req.Discount)
-	// product.Image = req.Image
+	product.Image = req.Image
 	product.Mrp = uint(req.Mrp)
 	product.Os = req.Os
 	product.Processor = req.Processor
@@ -125,15 +135,6 @@ func (u *ProductHandler) AddProduct(ctx context.Context, req *pb.AddProductReque
 	product.Units = uint64(req.Units)
 	product.Saleprice = uint(req.Saleprice)
 
-	filename := "5432345"
-	file := &multipart.FileHeader{
-		Filename: filename,
-		Size:     int64(len(req.Image)),
-	}
-
-	fmt.Println("333", file)
-
-	product.Image = file
 	result, err := u.categoryUseCase.AddInventory(&product)
 	if err != nil {
 		return nil, err
@@ -159,5 +160,38 @@ func (u *ProductHandler) AddProduct(ctx context.Context, req *pb.AddProductReque
 		BatteryCapacity:    uint32(result.Batterycapacity),
 		Processor:          product.Processor,
 		ImageUrl:           result.ImageURL,
+	}, nil
+}
+
+func (h *ProductHandler) GetAllProduct(ctx context.Context, req *pb.GetAllProductRequest) (*pb.GetAllProductResponseSlice, error) {
+	result, err := h.categoryUseCase.GetAllInventory(req.Offset, req.Limit)
+	if err != nil {
+		return nil, err
+	}
+
+	var finalResult []*pb.GetAllProductResponse
+	for _, val := range *result {
+		finalResult = append(finalResult, &pb.GetAllProductResponse{ProductId: uint32(val.ID), Productname: val.Productname, Mrp: int32(val.Mrp), Discount: uint32(val.Discount), Saleprice: int32(val.Saleprice), CategoryDiscount: uint32(val.CategoryDiscount), Units: uint32(val.Units)})
+	}
+
+	return &pb.GetAllProductResponseSlice{
+		Products: finalResult,
+	}, nil
+}
+
+func (h *ProductHandler) CreateCart(ctx context.Context, req *pb.CreateCartRequst) (*pb.CreateCartResponse, error) {
+	var cart *requestmodel_product_svc.Cart
+	cart.InventoryID = req.InventoryId
+	cart.Quantity = uint(req.Quantity)
+	cart.UserID = req.UserId
+
+	result, err := h.categoryUseCase.CreateCart(cart)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CreateCartResponse{
+		UserId:      result.UserID,
+		InventoryId: result.InventoryID,
+		Quantity:    uint32(result.Quantity),
 	}, nil
 }

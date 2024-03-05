@@ -7,6 +7,7 @@ import (
 )
 
 func ProductRoutes(engin *gin.Engine, category *handler_product_svc.ProductHandler, authMiddlewire *handler.Middlewire) {
+	engin.GET("/", category.GetAllProduct)
 	engin.Use(authMiddlewire.AdminAuthMiddlewire)
 	{
 		categoryManagementent := engin.Group("/category")
@@ -21,9 +22,9 @@ func ProductRoutes(engin *gin.Engine, category *handler_product_svc.ProductHandl
 			brandManagementent.GET("", category.GetAllBrand)
 		}
 
-		productManagement:= engin.Group("product")
+		productManagement := engin.Group("product")
 		{
-			productManagement.POST("/",category.AddProduct)
+			productManagement.POST("/", category.AddProduct)
 		}
 	}
 }

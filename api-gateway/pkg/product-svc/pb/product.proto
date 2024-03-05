@@ -10,6 +10,8 @@ service ProductService{
     rpc CreateBrand (createBrandRequest) returns (createBrandResponse) {}
     rpc GetAllBrand (getAllBrandRequest) returns (getAllBrandResponse) {}
     rpc AddProduct (AddProductRequest) returns (AddProductResponse) {}
+    rpc GetAllProduct (GetAllProductRequest) returns (GetAllProductResponseSlice) {}
+    rpc CreateCart (CreateCartRequst) returns (CreateCartResponse){}
 }
 
 message createCategoryRequest{
@@ -87,3 +89,36 @@ message AddProductResponse{
     string processor = 18;
     string image_url = 19;
 }
+
+message GetAllProductRequest{
+    string offset=1;
+    string limit=2;
+}
+
+message GetAllProductResponse{
+    uint32 product_id = 1;
+    string productname = 2;
+    int32 mrp = 3;
+    uint32 discount = 4;
+    int32 saleprice = 5;
+    uint32 category_discount = 6;
+    uint32 units = 9;
+}
+
+message GetAllProductResponseSlice{
+    repeated GetAllProductResponse products =1;
+}
+
+
+message CreateCartRequst{
+    string user_id = 1;
+    string inventory_id = 2;
+    uint32 quantity = 3;
+}
+
+message CreateCartResponse{
+    string user_id = 1;
+    string inventory_id = 2;
+    uint32 quantity = 3;
+}
+

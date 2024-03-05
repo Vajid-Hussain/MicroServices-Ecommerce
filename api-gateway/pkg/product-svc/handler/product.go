@@ -134,3 +134,35 @@ func (h *ProductHandler) AddProduct(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+func (h *ProductHandler) GetAllProduct(c *gin.Context) {
+	page := c.Query("page")
+	limit := c.DefaultQuery("limit", "1")
+
+	result, err := h.Clind.GetAllProduct(context.Background(), &pb.GetAllProductRequest{
+		Offset: page,
+		Limit:  limit,
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (h *ProductHandler) CrateCart(c *gin.Context) {
+	var cart *requestmodel_product_svc_clind.Cart
+
+	err := c.BindJSON(&cart)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err": err})
+	}
+
+	userID, exist := c.MustGet("UserID").(string)
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"err":"can't fetch user id from context"})
+		return
+	}
+
+	cart.UserID = userID
+}

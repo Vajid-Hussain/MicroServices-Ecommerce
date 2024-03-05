@@ -1,6 +1,8 @@
 package usecase_prodcut_svc
 
 import (
+	"errors"
+
 	config_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/config"
 	requestmodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/requestmodel"
 	responsemodel_product_svc "github.com/vajid-hussain/mobile-mart-microservice-product/pkg/model/responsemodel"
@@ -10,13 +12,13 @@ import (
 )
 
 type categoryUseCase struct {
-	repo interfaceRepositoryProductService.ICategoryRepository
+	repo   interfaceRepositoryProductService.ICategoryRepository
 	config *config_product_svc.Config
 }
 
-func NewCategoryUseCase(repository interfaceRepositoryProductService.ICategoryRepository,config *config_product_svc.Config) interfaceUseCase_product_svc.ICategoryUseCase {
+func NewCategoryUseCase(repository interfaceRepositoryProductService.ICategoryRepository, config *config_product_svc.Config) interfaceUseCase_product_svc.ICategoryUseCase {
 	return &categoryUseCase{repo: repository,
-	config: config,}
+		config: config}
 }
 
 func (r *categoryUseCase) NewCategory(categoryDetails *requestmodel_product_svc.Category) (*responsemodel_product_svc.CategoryDetails, error) {
@@ -91,3 +93,70 @@ func (d *categoryUseCase) AddInventory(inventory *requestmodel_product_svc.Inven
 
 	return product, nil
 }
+
+func (r *categoryUseCase) GetAllInventory(page string, limit string) (*[]responsemodel_product_svc.InventoryShowcase, error) {
+
+	offSet, limits, err := helper_product_svc.Pagination(page, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	inventories, err := r.repo.GetInventory(offSet, limits)
+	if err != nil {
+		return nil, err
+	}
+
+	return inventories, nil
+}
+
+func (r *categoryUseCase) CreateCart(cart *requestmodel_product_svc.Cart) (*responsemodel_product_svc.Cart, error) {
+
+	count, err := r.repo.IsInventoryExistInCart(cart.InventoryID, cart.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if count >= 1 {
+		return nil, errors.New("inverntory alrady exist in cart now you can purchase")
+	}
+
+	cart.Quantity = 1
+
+	inserCart, err := r.repo.InsertToCart(cart)
+	if err != nil {
+		return nil, err
+	}
+	return inserCart, nil
+}
+
+// func (r *cartUseCase) ShowCart(userID string) (*responsemodel.UserCart, error) {
+
+// 	cart := &responsemodel.UserCart{}
+
+// 	quantity, err := r.repo.GetCartCriteria(userID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	cart.InventoryCount = quantity
+// 	cart.UserID = userID
+
+// 	cartInventories, err := r.repo.GetCart(userID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	for i, inventory := range *cartInventories {
+
+// 		// price, err := r.repo.GetNetAmoutOfCart(userID, inventory.InventoryID)
+// 		// if err != nil {
+// 		// 	return nil, err
+// 		// }
+// 		(*cartInventories)[i].FinalPrice = helper.FindDiscount(float64(inventory.Price), float64(inventory.Discount+inventory.CategoryDiscount)) * inventory.Quantity
+// 		fmt.Println("**", (*cartInventories)[i].FinalPrice)
+// 		cart.TotalPrice += (*cartInventories)[i].FinalPrice
+// 	}
+
+// 	cart.Cart = *cartInventories
+// 	return cart, nil
+// }

@@ -12,7 +12,6 @@ type Brand struct {
 	Status string `gorm:"default:active"`
 }
 
-
 type Inventories struct {
 	ID                 uint `gorm:"primary key"`
 	Productname        string
@@ -33,4 +32,12 @@ type Inventories struct {
 	Processor          string
 	ImageURL           string
 	Status             string `gorm:"default:active"`
+}
+
+type Cart struct {
+	UserID      uint
+	InventoryID uint
+	Product     Inventories `gorm:"foreignkey:InventoryID;association_foreignkey:ID"`
+	Quantity    uint        `gorm:"default:1"`
+	Status      string      `gorm:"default:active"`
 }

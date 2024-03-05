@@ -36,3 +36,20 @@ type InventoryRes struct {
     Processor          string  `json:"processor" validate:"required"`
     ImageURL           string  `json:"imageURL" validate:"required"`
 }
+
+type InventoryShowcase struct {
+    ID                              uint   `json:"productID"`
+    Productname                     string `json:"productname"`
+    Mrp                             int    `json:"mrp" `
+    Discount                        uint   `form:"discount" `
+    Saleprice                       int    `json:"saleprice" `
+    CategoryDiscount                uint   `json:"categoryDiscount,omitempty"`
+    Units                           uint   `json:"units"`
+}
+
+type Cart struct {
+    UserID      string `json:"cartid userid" swaggerignore:"true"`
+    InventoryID string `json:"inventoryid" validate:"required,number"`
+    Quantity    uint   `json:"quantity" swaggerignore:"true"`
+    Price      uint   `json:"price,omitempty" swaggerignore:"true"`
+}
