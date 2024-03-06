@@ -25,6 +25,7 @@ func (h *ProductHandler) CreateCategory(c *gin.Context) {
 	err := c.BindJSON(&categoryDetails)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err})
+		return
 	}
 
 	result, err := h.Clind.CreateCatogory(context.Background(), &pb.CreateCategoryRequest{
@@ -56,6 +57,7 @@ func (h *ProductHandler) CreateBrand(c *gin.Context) {
 	err := c.BindJSON(&brandDetails)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err})
+		return
 	}
 
 	result, err := h.Clind.CreateBrand(context.Background(), &pb.CreateBrandRequest{
@@ -145,24 +147,55 @@ func (h *ProductHandler) GetAllProduct(c *gin.Context) {
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	c.JSON(http.StatusOK, result)
 }
 
 func (h *ProductHandler) CrateCart(c *gin.Context) {
-	var cart *requestmodel_product_svc_clind.Cart
+	var cart requestmodel_product_svc_clind.Cart
 
 	err := c.BindJSON(&cart)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err})
-	}
-
-	userID, exist := c.MustGet("UserID").(string)
-	if !exist {
-		c.JSON(http.StatusBadRequest, gin.H{"err":"can't fetch user id from context"})
 		return
 	}
 
+	userID, exist := c.MustGet("userID").(string)
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"err": "can't fetch user id from context"})
+		return
+	}
 	cart.UserID = userID
+
+	result, err := h.Clind.CreateCart(context.Background(), &pb.CreateCartRequst{
+		UserId:      cart.UserID,
+		InventoryId: cart.InventoryID,
+		Quantity:    uint32(cart.Quantity),
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, result)
+
+	cart.UserID = userID
+}
+
+func (h *ProductHandler) GetCart(c *gin.Context) {
+	userID, exist := c.MustGet("userID").(string)
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{"err": "can't fetch user id from context"})
+		return
+	}
+
+	result, err := h.Clind.GetCart(context.Background(), &pb.GetCartRequest{UserID: userID})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, result)
 }

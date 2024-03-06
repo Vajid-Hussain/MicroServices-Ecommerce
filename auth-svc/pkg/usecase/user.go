@@ -140,9 +140,10 @@ func (u *userUseCase) UserLogin(loginCredential requestmodel_auth_svc.UserLogin)
 }
 
 func (u *userUseCase) VerifyUserToken(accessToken, refreshToken string) (string, error) {
+	fmt.Println("user middlewiere")
 	id, err := service_auth_svc.VerifyAcessToken(accessToken, u.token.UserSecurityKey)
 	if err != nil {
-		return "", err
+		fmt.Println("error at accestoken", err)
 	}
 
 	err = service_auth_svc.VerifyRefreshToken(refreshToken, u.token.UserSecurityKey)

@@ -12,6 +12,8 @@ service ProductService{
     rpc AddProduct (AddProductRequest) returns (AddProductResponse) {}
     rpc GetAllProduct (GetAllProductRequest) returns (GetAllProductResponseSlice) {}
     rpc CreateCart (CreateCartRequst) returns (CreateCartResponse){}
+    rpc GetCart (GetCartRequest) returns (GetCartResponse) {}
+    rpc FetchCartForOrder (GetCartForOrderRequest) returns (GetCartForOrderResponse) {}
 }
 
 message createCategoryRequest{
@@ -121,3 +123,37 @@ message CreateCartResponse{
     uint32 quantity = 3;
 }
 
+message GetCartRequest{
+    string UserID = 1;
+}
+
+message GetCartResponse{
+    string user_id = 1;
+    uint32 total_price = 2;
+    uint32 inventory_count = 3;
+    repeated CartInventory cart = 4;
+}
+
+message CartInventory {
+    string productname = 1;
+    string inventory_id = 2;
+    string category_id = 4;
+    uint32 quantity = 5;
+    uint32 price = 6;
+    uint32 discount = 7;
+    uint32 saleprice = 8;
+    uint32 final_price = 10;
+    string title = 11;
+    uint64 units = 12;
+}
+
+message GetCartForOrderRequest{
+    string userID =1;
+}
+
+message GetCartForOrderResponse{
+    string user_id = 1;
+    uint32 total_price = 2;
+    uint32 inventory_count = 3;
+    repeated CartInventory cart = 4;
+}

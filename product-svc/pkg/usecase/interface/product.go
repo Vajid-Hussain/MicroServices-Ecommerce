@@ -13,4 +13,6 @@ type ICategoryUseCase interface {
 	AddInventory( *requestmodel_product_svc.InventoryReq) (*responsemodel_product_svc.InventoryRes, error)
 	GetAllInventory( string, string) (*[]responsemodel_product_svc.InventoryShowcase, error) 
 	CreateCart( *requestmodel_product_svc.Cart) (*responsemodel_product_svc.Cart, error)
+	ShowCart( string) (*responsemodel_product_svc.UserCart, error)
+	GetCartForOrder( string) (*responsemodel_product_svc.UserCart, error)
 }

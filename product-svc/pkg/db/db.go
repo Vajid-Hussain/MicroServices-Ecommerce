@@ -42,7 +42,8 @@ func InitDB(config *config_product_svc.Config) (*gorm.DB, error) {
 
 	err = DB.AutoMigrate(domain_products_svc.Brand{},
 		domain_products_svc.Category{},
-		domain_products_svc.Inventories{})
+		domain_products_svc.Inventories{},
+		domain_products_svc.Cart{})
 	if err != nil {
 		return nil, err
 	}

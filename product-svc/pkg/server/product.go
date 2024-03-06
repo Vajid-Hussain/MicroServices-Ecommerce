@@ -108,17 +108,6 @@ func (u *ProductHandler) GetAllBrand(ctx context.Context, req *pb.GetAllBrandReq
 func (u *ProductHandler) AddProduct(ctx context.Context, req *pb.AddProductRequest) (*pb.AddProductResponse, error) {
 	var product requestmodel_product_svc.InventoryReq
 
-	validationErr := helper_product_svc.EasyValidataion(product)
-	var errorString string
-	if len(validationErr) > 0 {
-		for _, val := range validationErr {
-			errorString += fmt.Errorf(val.Error).Error()
-		}
-	}
-	if len(validationErr) > 0 {
-		return nil, fmt.Errorf(errorString)
-	}
-
 	product.Batterycapacity = uint(req.BatteryCapacity)
 	product.BrandID = uint(req.BrandId)
 	product.CategoryID = uint(req.CategoryId)
@@ -134,6 +123,17 @@ func (u *ProductHandler) AddProduct(ctx context.Context, req *pb.AddProductReque
 	product.Screensize = float64(req.Screensize)
 	product.Units = uint64(req.Units)
 	product.Saleprice = uint(req.Saleprice)
+
+	validationErr := helper_product_svc.EasyValidataion(product)
+	var errorString string
+	if len(validationErr) > 0 {
+		for _, val := range validationErr {
+			errorString += fmt.Errorf(val.Error).Error()
+		}
+	}
+	if len(validationErr) > 0 {
+		return nil, fmt.Errorf(errorString)
+	}
 
 	result, err := u.categoryUseCase.AddInventory(&product)
 	if err != nil {
@@ -180,10 +180,21 @@ func (h *ProductHandler) GetAllProduct(ctx context.Context, req *pb.GetAllProduc
 }
 
 func (h *ProductHandler) CreateCart(ctx context.Context, req *pb.CreateCartRequst) (*pb.CreateCartResponse, error) {
-	var cart *requestmodel_product_svc.Cart
+	var cart = &requestmodel_product_svc.Cart{}
 	cart.InventoryID = req.InventoryId
 	cart.Quantity = uint(req.Quantity)
 	cart.UserID = req.UserId
+
+	validationErr := helper_product_svc.EasyValidataion(cart)
+	var errorString string
+	if len(validationErr) > 0 {
+		for _, val := range validationErr {
+			errorString += fmt.Errorf(val.Error).Error()
+		}
+	}
+	if len(validationErr) > 0 {
+		return nil, fmt.Errorf(errorString)
+	}
 
 	result, err := h.categoryUseCase.CreateCart(cart)
 	if err != nil {
@@ -194,4 +205,64 @@ func (h *ProductHandler) CreateCart(ctx context.Context, req *pb.CreateCartRequs
 		InventoryId: result.InventoryID,
 		Quantity:    uint32(result.Quantity),
 	}, nil
+}
+
+func (h *ProductHandler) GetCart(ctx context.Context, req *pb.GetCartRequest) (*pb.GetCartResponse, error) {
+	result, err := h.categoryUseCase.ShowCart(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	var allCart []*pb.CartInventory
+
+	for _, val := range result.Cart {
+		cart := &pb.CartInventory{
+			Productname: val.Productname,
+			InventoryId: val.InventoryID,
+			CategoryId:  val.CategoryID,
+			Quantity:    uint32(val.Quantity),
+			Price:       uint32(val.Price),
+			Discount:    uint32(val.Discount),
+			Saleprice:   uint32(val.Saleprice),
+			FinalPrice:  uint32(val.FinalPrice),
+			Title:       val.Title,
+			Units:       val.Units,
+		}
+		allCart = append(allCart, cart)
+	}
+
+	return &pb.GetCartResponse{UserId: result.UserID,
+		TotalPrice: uint32(result.TotalPrice),
+		InventoryCount: uint32(result.InventoryCount),
+		Cart: allCart,}, nil
+}
+
+func (h *ProductHandler) FetchCartForOrder(ctx context.Context, req *pb.GetCartForOrderRequest) (*pb.GetCartForOrderResponse, error) {
+	result, err := h.categoryUseCase.ShowCart(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	var allCart []*pb.CartInventory
+
+	for _, val := range result.Cart {
+		cart := &pb.CartInventory{
+			Productname: val.Productname,
+			InventoryId: val.InventoryID,
+			CategoryId:  val.CategoryID,
+			Quantity:    uint32(val.Quantity),
+			Price:       uint32(val.Price),
+			Discount:    uint32(val.Discount),
+			Saleprice:   uint32(val.Saleprice),
+			FinalPrice:  uint32(val.FinalPrice),
+			Title:       val.Title,
+			Units:       val.Units,
+		}
+		allCart = append(allCart, cart)
+	}
+
+	return &pb.GetCartForOrderResponse{UserId: result.UserID,
+		TotalPrice: uint32(result.TotalPrice),
+		InventoryCount: uint32(result.InventoryCount),
+		Cart: allCart,}, nil
 }

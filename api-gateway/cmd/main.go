@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	server_auth "github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/server"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/config"
+	server_order_clind "github.com/vajid-hussain/mobile-mart-microservice/pkg/order-svc/server"
 	server_product_svc "github.com/vajid-hussain/mobile-mart-microservice/pkg/product-svc/server"
 )
 
@@ -24,6 +25,7 @@ func main() {
 	}
 
 	err = server_product_svc.InitProductClind(config, engin, authMiddlewire)
+	err = server_order_clind.InitOrderClind(*config, engin, authMiddlewire)
 
 	err = engin.Run(config.Port)
 	if err != nil {

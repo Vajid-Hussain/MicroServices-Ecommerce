@@ -98,7 +98,6 @@ func (d *categoryRepository) GetInventory(offSet int, limit int) (*[]responsemod
 	return &inventory, nil
 }
 
-
 //cart
 
 func (d *categoryRepository) IsInventoryExistInCart(inventoryID string, userID string) (int, error) {
@@ -127,32 +126,43 @@ func (d *categoryRepository) InsertToCart(cart *requestmodel_product_svc.Cart) (
 	return insertCart, nil
 }
 
+func (d *categoryRepository) GetCart(userID string) (*[]responsemodel_product_svc.CartInventory, error) {
+	var cartView *[]responsemodel_product_svc.CartInventory
+	query := "SELECT * FROM carts INNER JOIN inventories ON id=inventory_id  WHERE carts.user_id=? AND carts.status='active'"
+	result := d.DB.Raw(query, userID).Scan(&cartView)
+	if result.Error != nil {
+		return nil, errors.New("face some issue while  get cart")
+	}
+	if result.RowsAffected == 0 {
+		return nil, errors.New("user have no cart")
+	}
+	return cartView, nil
+}
 
-// func (d *cartRepository) GetCart(userID string) (*[]responsemodel.CartInventory, error) {
-// 	var cartView *[]responsemodel.CartInventory
-// 	query := "SELECT * FROM carts INNER JOIN inventories ON id=inventory_id LEFT JOIN category_offers ON category_offers.seller_id=inventories.seller_id AND category_offers.category_id=inventories.category_id AND category_offers.status='active' AND category_offers.end_date>now() WHERE carts.user_id=? AND carts.status='active'"
-// 	result := d.DB.Raw(query, userID).Scan(&cartView)
-// 	if result.Error != nil {
-// 		return nil, errors.New("face some issue while  get cart")
-// 	}
-// 	if result.RowsAffected == 0 {
-// 		return nil, errors.New("user have no cart")
-// 	}
-// 	return cartView, nil
-// }
+func (d *categoryRepository) GetCartCriteria(userID string) (uint, error) {
 
-// func (d *cartRepository) GetCartCriteria(userID string) (uint, error) {
+	var count uint
+	query := "SELECT SUM(quantity) FROM carts WHERE user_id=? AND status='active'"
+	result := d.DB.Raw(query, userID)
+	result.Row().Scan(&count)
+	if result.Error != nil {
+		return 0, errors.New("face some issue while  get cart")
+	}
+	if result.RowsAffected == 0 {
+		return 0, resCustomError_product_svc.ErrNoRowAffected
+	}
+	return count, nil
+}
 
-// 	var count uint
-// 	query := "SELECT SUM(quantity) FROM carts WHERE user_id=? AND status='active'"
-// 	result := d.DB.Raw(query, userID)
-// 	result.Row().Scan(&count)
-// 	if result.Error != nil {
-// 		return 0, errors.New("face some issue while  get cart")
-// 	}
-// 	if result.RowsAffected == 0 {
-// 		return 0, resCustomError.ErrNoRowAffected
-// 	}
-// 	return count, nil
-// }
+func (d *categoryRepository) DeleteInventoryFromCart(inventoryID string, userID string) error {
 
+	query := "UPDATE carts SET status='delete' WHERE inventory_id = ? AND user_id= ? AND status= 'active'"
+	result := d.DB.Exec(query, inventoryID, userID)
+	if result.Error != nil {
+		return errors.New("face some issue while delete inventory in cart")
+	}
+	if result.RowsAffected == 0 {
+		return resCustomError_product_svc.ErrNoRowAffected
+	}
+	return nil
+}

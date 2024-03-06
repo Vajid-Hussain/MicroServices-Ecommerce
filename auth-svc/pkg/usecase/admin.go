@@ -1,6 +1,8 @@
 package usecase_auth_svc
 
 import (
+	"fmt"
+
 	config_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/config"
 	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/requestmodel"
 	responsemodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice-auth/pkg/model/responsemodel"
@@ -44,6 +46,7 @@ func (r *adminUsecase) AdminLogin(adminData *requestmodel_auth_svc.AdminLoginDat
 }
 
 func (u *adminUsecase) VerifyAdminToken(token string) (*emptypb.Empty, error) {
+	fmt.Println("admin middlewire auth")
 	err := service_auth_svc.VerifyRefreshToken(token, u.tokenSecurityKey.AdminSecurityKey)
 	if err != nil {
 		return nil, err

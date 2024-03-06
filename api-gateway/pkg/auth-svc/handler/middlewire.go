@@ -20,7 +20,7 @@ func NewAuthMiddlewire(clind pb.AuthServiceClient) *Middlewire {
 func (m *Middlewire) UserAuthMiddlewire(c *gin.Context) {
 	accessToken := c.Request.Header.Get("authorization")
 	refreshToken := c.Request.Header.Get("refreshtoken")
-
+fmt.Println("---------")
 	if accessToken == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"err": "there is no access token"})
 		c.Abort()
@@ -32,7 +32,7 @@ func (m *Middlewire) UserAuthMiddlewire(c *gin.Context) {
 		RefreshToken: refreshToken,
 	})
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "token is not valid"})
+		c.JSON(http.StatusUnauthorized, err.Error())
 		c.Abort()
 		return
 	}
@@ -42,11 +42,11 @@ func (m *Middlewire) UserAuthMiddlewire(c *gin.Context) {
 
 func (m *Middlewire) AdminAuthMiddlewire(c *gin.Context) {
 	token := c.Request.Header.Get("authorization")
-
+	fmt.Println("==========")
 	_, err := m.Clind.ValidateAdminToken(context.Background(), &pb.ValidateAdminTokenRequest{
 		Token: token,
 	})
-	fmt.Println("----", err, token)
+
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "token is not valid"})
 		return

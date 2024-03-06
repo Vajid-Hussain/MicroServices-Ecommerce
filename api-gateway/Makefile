@@ -6,3 +6,6 @@ protoc-auth:
 
 protoc-product:
 	protoc ./pkg/product-svc/pb/product.proto --go-grpc_out=./ --go_out=./
+
+protoc-order:
+	protoc ./pkg/order-svc/pb/order.proto --go-grpc_out=./ --go_out=./

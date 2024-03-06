@@ -14,8 +14,8 @@ func InitProductClind(config *config.Config, engin *gin.Engine, authMiddlewire *
 	clind, _ := clind_prodcut_svc.InitializeClindPoductService(*config)
 	categoryHandler := handler_product_svc.NewProductHandler(clind.Clind)
 
-	routes_prodcuts_svc.ProductRoutes(engin, categoryHandler,authMiddlewire)
+	routes_prodcuts_svc.ProductRoutes(engin.Group("/"), categoryHandler, authMiddlewire)
+	routes_prodcuts_svc.ProductUserRoutes(engin.Group("/"), categoryHandler, authMiddlewire)
 
 	return nil
 }
-

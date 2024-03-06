@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package order;
+
+option go_package= "./pkg/order-svc/pb/";
+
+service orderService{
+    rpc OrderCreation (orderRequest) returns (orderResponse) {}
+}
+
+message orderRequest{
+    string userID=1;
+    string OderType =2;
+}
+
+message orderResponse{
+    string message =2;
+}
+
