@@ -152,7 +152,7 @@ func (r *categoryUseCase) ShowCart(userID string) (*responsemodel_product_svc.Us
 		// 	return nil, err
 		// }
 		(*cartInventories)[i].FinalPrice = helper_product_svc.FindDiscount(float64(inventory.Price), float64(inventory.Discount+inventory.CategoryDiscount)) * inventory.Quantity
-		fmt.Println("**", (*cartInventories)[i].FinalPrice)
+		// fmt.Println("**", (*cartInventories)[i].FinalPrice)
 		cart.TotalPrice += (*cartInventories)[i].FinalPrice
 	}
 
@@ -177,12 +177,29 @@ func (r *categoryUseCase) GetCartForOrder(userID string) (*responsemodel_product
 		return nil, err
 	}
 
+	for _, data := range *cartInventories {
+		unit, err := r.repo.GetInventoryUnits(data.InventoryID)
+		if err != nil {
+			return nil, err
+		}
+
+		if *unit < data.Quantity {
+			return nil, fmt.Errorf("sorry for inconvinent for insafishend stock , we have only %d units, your requirement is %d unit,of product id %s", *unit, data.Quantity, data.InventoryID)
+		}
+
+		newUnit := *unit - data.Quantity
+		err = r.repo.UpdateInventoryUnits(data.InventoryID, newUnit)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	for i, inventory := range *cartInventories {
-		
+
 		(*cartInventories)[i].FinalPrice = helper_product_svc.FindDiscount(float64(inventory.Price), float64(inventory.Discount+inventory.CategoryDiscount)) * inventory.Quantity
-		fmt.Println("**", (*cartInventories)[i].FinalPrice)
+		// fmt.Println("**", (*cartInventories)[i].FinalPrice)
 		cart.TotalPrice += (*cartInventories)[i].FinalPrice
-		r.repo.DeleteInventoryFromCart(inventory.InventoryID, userID)
+		// r.repo.DeleteInventoryFromCart(inventory.InventoryID, userID)
 	}
 
 	cart.Cart = *cartInventories

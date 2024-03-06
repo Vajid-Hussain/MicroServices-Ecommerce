@@ -238,7 +238,7 @@ func (h *ProductHandler) GetCart(ctx context.Context, req *pb.GetCartRequest) (*
 }
 
 func (h *ProductHandler) FetchCartForOrder(ctx context.Context, req *pb.GetCartForOrderRequest) (*pb.GetCartForOrderResponse, error) {
-	result, err := h.categoryUseCase.ShowCart(req.UserID)
+	result, err := h.categoryUseCase.GetCartForOrder(req.UserID)
 	if err != nil {
 		return nil, err
 	}

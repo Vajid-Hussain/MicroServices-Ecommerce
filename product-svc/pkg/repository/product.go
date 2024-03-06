@@ -166,3 +166,31 @@ func (d *categoryRepository) DeleteInventoryFromCart(inventoryID string, userID 
 	}
 	return nil
 }
+
+func (d *categoryRepository) GetInventoryUnits(inventoryID string) (*uint, error) {
+
+	var units uint
+	query := "SELECT units FROM inventories WHERE id=?"
+	result := d.DB.Raw(query, inventoryID).Scan(&units)
+	if result.Error != nil {
+		return nil, errors.New("face some issue while get inventory units")
+	}
+	if result.RowsAffected == 0 {
+		return nil, resCustomError_product_svc.ErrNoRowAffected
+	}
+	return &units, nil
+}
+
+func (d *categoryRepository) UpdateInventoryUnits(inventoryID string, units uint) error {
+
+	query := "UPDATE inventories SET units= ? WHERE id =?"
+	result := d.DB.Exec(query, units, inventoryID)
+	if result.Error != nil {
+		return errors.New("face some issue while updating inventory unit")
+	}
+	if result.RowsAffected == 0 {
+
+		return resCustomError_product_svc.ErrNoRowAffected
+	}
+	return nil
+}

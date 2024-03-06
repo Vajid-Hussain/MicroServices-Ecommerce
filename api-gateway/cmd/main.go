@@ -25,7 +25,15 @@ func main() {
 	}
 
 	err = server_product_svc.InitProductClind(config, engin, authMiddlewire)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	err = server_order_clind.InitOrderClind(*config, engin, authMiddlewire)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 
 	err = engin.Run(config.Port)
 	if err != nil {

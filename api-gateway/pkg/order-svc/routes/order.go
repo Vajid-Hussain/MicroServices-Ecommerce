@@ -11,7 +11,7 @@ func OrderRoutes(engin *gin.Engine, authMiddlewire handler.Middlewire, order han
 	{
 		orderManagement.Use(authMiddlewire.UserAuthMiddlewire)
 		{
-			engin.POST("/", order.CreateOrder)
+			orderManagement.POST("/", order.CreateOrder)
 		}
 	}
 }

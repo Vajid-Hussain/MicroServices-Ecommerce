@@ -74,3 +74,4 @@ type UserCart struct {
 	InventoryCount uint            `json:"product_count"`
 	Cart           []CartInventory `json:"cart" gorm:"-"`
 }
+

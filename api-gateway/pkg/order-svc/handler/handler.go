@@ -6,13 +6,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/order-svc/pb"
+	requestmodel_order_svc_clind "github.com/vajid-hussain/mobile-mart-microservice/pkg/order-svc/requestmodel"
 )
 
 type OrderHandler struct {
 	Clind pb.OrderServiceClient
 }
 
-func NewOrderHandler (clind pb.OrderServiceClient) *OrderHandler{
+func NewOrderHandler(clind pb.OrderServiceClient) *OrderHandler {
 	return &OrderHandler{Clind: clind}
 }
 
@@ -23,8 +24,15 @@ func (h *OrderHandler) CreateOrder(c *gin.Context) {
 		return
 	}
 
+	var order requestmodel_order_svc_clind.OrderReq
+	if err := c.ShouldBind(&order); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
 	result, err := h.Clind.OrderCreation(context.Background(), &pb.OrderRequest{
-		UserID: userID,
+		UserID:   userID,
+		OderType: order.PaymentType,
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())

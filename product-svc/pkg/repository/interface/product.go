@@ -17,4 +17,6 @@ type ICategoryRepository interface {
 	GetCartCriteria( string) (uint, error)
 	GetCart( string) (*[]responsemodel_product_svc.CartInventory, error)
 	DeleteInventoryFromCart( string, string) error 
+	GetInventoryUnits( string) (*uint, error) 
+	UpdateInventoryUnits( string,  uint) error 
 }
