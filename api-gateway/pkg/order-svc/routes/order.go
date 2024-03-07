@@ -9,8 +9,11 @@ import (
 func OrderRoutes(engin *gin.Engine, authMiddlewire handler.Middlewire, order handler_order_svc.OrderHandler) {
 	orderManagement := engin.Group("/order")
 	{
+		orderManagement.GET("/", order.Payment)
+
 		orderManagement.Use(authMiddlewire.UserAuthMiddlewire)
 		{
+			orderManagement.GET("/all",order.GetAllOrders)
 			orderManagement.POST("/", order.CreateOrder)
 		}
 	}

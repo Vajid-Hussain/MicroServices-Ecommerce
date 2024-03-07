@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <h1>Payment Page</h1>
+    <div id="payment-form">
+        <label for="card-element">Credit or debit card</label>
+        <div id="card-element">
+            <!-- A Stripe Element will be inserted here. -->
+        </div>
+        <!-- Used to display form errors. -->
+        <div id="card-errors" role="alert"></div>
+        <button id="submit-button">Submit Payment</button>
+    </div>
+
+    <script>
+        var stripe = Stripe('pk_test_51OrFsbSFn03N8R3vY9dU32fVI9OQJ2b7L5BnkAlWHNRwzqWKAX3U3vTHsiUIrz2JOeLIkP7N2HCziIPmPo0jN2ry001T6t6bS7');
+        var elements = stripe.elements();
+
+        var card = elements.create('card');
+        card.mount('#card-element');
+
+        var cardErrors = document.getElementById('card-errors');
+        card.addEventListener('change', function(event) {
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
+            } else {
+                cardErrors.textContent = '';
+            }
+        });
+
+        var submitButton = document.getElementById('submit-button');
+        submitButton.addEventListener('click', function(ev) {
+            ev.preventDefault();
+            stripe.confirmCardPayment('pi_3OrMGhSFn03N8R3v1EkLtFrz_secret_yKvTT9P5xr1RED6nabl2SWtDH', {
+                payment_method: {
+                    card: card,
+                }
+            }).then(function(result) {
+                if (result.error) {
+                    // Show error to your customer
+                    console.log(result.error.message);
+                } else {
+                    // Payment succeeded, handle result.paymentIntent
+                    console.log("Payment succeeded:", result.paymentIntent);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

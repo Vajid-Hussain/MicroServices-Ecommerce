@@ -6,6 +6,8 @@ option go_package= "./pkg/order-svc/pb/";
 
 service orderService{
     rpc OrderCreation (orderRequest) returns (orderResponse) {}
+    rpc GetAllOrders (orderShowCaseRequest) returns (orderShowCaseResponse) {}
+    rpc OnlinePayment (PaymentRequest) returns (paymentResponse) {}
 }
 
 message orderRequest{
@@ -17,3 +19,31 @@ message orderResponse{
     string message =2;
 }
 
+message orderShowCaseRequest{
+    string userID = 1;
+}
+
+message orderShowCaseResponse{
+    repeated OrderShowcase orders = 1;
+}
+
+message OrderShowcase {
+    string single_order_id = 1;
+    string order_id = 2;
+    string user_id = 3;
+    string inventory_id = 4;
+    uint32 price = 5;
+    uint32 sale_price = 6;
+    string order_status = 7;
+    string payment_status = 8;
+    uint32 quantity = 9;
+}
+
+message PaymentRequest{
+    string userID =1;
+    string OrderID =2;
+}
+
+message paymentResponse{
+    string OrderIDSecret =1;
+}

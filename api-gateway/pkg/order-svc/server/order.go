@@ -15,6 +15,8 @@ func InitOrderClind(config config.Config, engin *gin.Engine, authMiddlewire *han
 		return err
 	}
 
+	engin.LoadHTMLGlob("./template/*.html")
+
 	orderHandler := handler_order_svc.NewOrderHandler(clind.Clind)
 	routes_order.OrderRoutes(engin, *authMiddlewire, *orderHandler)
 

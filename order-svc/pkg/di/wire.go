@@ -10,19 +10,18 @@ import (
 )
 
 func InitializeOrderServer(config *config_order_svc.Config) (*server_order_svc.OrderServer, error) {
-
 	clind, err := product_clind_in_order.InitProductClind(config)
 	if err != nil {
 		return nil, err
 	}
 
-	db, err:= db_order_svc.InitDB(config)
+	db, err := db_order_svc.InitDB(config)
 	if err != nil {
 		return nil, err
 	}
 
 	OrderRepository := repository_order_svc.NewOrderRepository(db)
-	usecaseOrder := usecase_order_svc.NewOrderUseCase(OrderRepository)
+	usecaseOrder := usecase_order_svc.NewOrderUseCase(OrderRepository, config)
 	orderHandler := server_order_svc.NewOrderService(clind.Clind, usecaseOrder)
 
 	return orderHandler, nil

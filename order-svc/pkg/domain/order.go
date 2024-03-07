@@ -11,6 +11,7 @@ type Order struct {
 
 type OrderProducts struct {
 	ItemID        uint `gorm:"primarykey"`
+	UserID        string
 	OrderID       string
 	Orderid       Order `gorm:"foreignkey:OrderID;association_foreignkey:ID"`
 	InventoryID   uint

@@ -3,10 +3,12 @@ package config_order_svc
 import "github.com/spf13/viper"
 
 type Config struct {
-	Port        string `mapstructure:"PORT"`
-	DBName      string `mapstructure:"DBNAME"`
-	DBUrl       string `mapstructure:"DBURL"`
-	ProductPort string `mapstructure:"PRODUCTPORT"`
+	Port                 string `mapstructure:"PORT"`
+	DBName               string `mapstructure:"DBNAME"`
+	DBUrl                string `mapstructure:"DBURL"`
+	ProductPort          string `mapstructure:"PRODUCTPORT"`
+	StripePublidhableKey string `mapstructure:"STRIPE_PUBLISHABLE_KEY"`
+	StripeSecretKey      string `mapstructure:"STRIPE_SECRET_KEY"`
 }
 
 func InitConfig() (*Config, error) {

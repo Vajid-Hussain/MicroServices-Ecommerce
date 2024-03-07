@@ -2,7 +2,6 @@ package server_order_svc
 
 import (
 	"context"
-	"fmt"
 
 	requestmodel_order_svc "github.com/vajid-hussain/mobile-mart-microservice-order/pkg/model/requestModel"
 	"github.com/vajid-hussain/mobile-mart-microservice-order/pkg/pb"
@@ -25,12 +24,10 @@ func (u *OrderServer) OrderCreation(ctx context.Context, req *pb.OrderRequest) (
 		UserID: req.UserID,
 	})
 
-	fmt.Println("---", result, err)
 	orders.InventoryCount = uint(result.InventoryCount)
 	orders.TotalPrice = uint(result.TotalPrice)
 	orders.UserID = result.UserId
 	orders.PaymentMethod = req.OderType
-	fmt.Println("****", orders)
 
 	for _, val := range result.Cart {
 		var order requestmodel_order_svc.CartInventory
@@ -48,16 +45,40 @@ func (u *OrderServer) OrderCreation(ctx context.Context, req *pb.OrderRequest) (
 		orders.Cart = append(orders.Cart, order)
 	}
 
-	order, err:=u.usecase.CreateOrder(&orders)
+	_, err = u.usecase.CreateOrder(&orders)
 	if err != nil {
 		return &pb.OrderResponse{
 			Message: "no order created something wend wrong",
 		}, err
 	}
 
-	fmt.Println("---", order, err)
-
 	return &pb.OrderResponse{
-		Message: "order craete successtully please pay the bill",
+		Message: "order craete successfully please pay the bill",
 	}, nil
+}
+
+func (u *OrderServer) GetAllOrders(ctx context.Context, req *pb.OrderShowCaseRequest) (*pb.OrderShowCaseResponse, error) {
+	result, err := u.usecase.OrderShowcase(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*pb.OrderShowcase
+	for _, o := range *result {
+		order := &pb.OrderShowcase{
+			SingleOrderId: o.SingleOrderID,
+			OrderId:       o.ID,
+			UserId:        o.UserID,
+			InventoryId:   o.InventoryID,
+			Price:         uint32(o.Price),
+			SalePrice:     uint32(o.Saleprice),
+			OrderStatus:   o.OrderStatus,
+			PaymentStatus: o.PaymentStatus,
+			Quantity:      uint32(o.Quantity),
+		}
+		orders = append(orders, order)
+	}
+
+	return &pb.OrderShowCaseResponse{Orders: orders}, nil
+
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -21,17 +22,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	lis,err:= net.Listen("tcp", config.Port)
+	lis, err := net.Listen("tcp", config.Port)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	grpcServer:=grpc.NewServer()
+	grpcServer := grpc.NewServer()
 	pb.RegisterOrderServiceServer(grpcServer, serverFunc)
+
+	fmt.Println("lisent on port 6003")
 
 	err = grpcServer.Serve(lis)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
-
