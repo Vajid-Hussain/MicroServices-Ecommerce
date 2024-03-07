@@ -2,7 +2,6 @@ package repository_order_svc
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	requestmodel_order_svc "github.com/vajid-hussain/mobile-mart-microservice-order/pkg/model/requestModel"
@@ -23,8 +22,8 @@ func NewOrderRepository(db *gorm.DB) interfaceRepository_order_svc.IOrderReposit
 func (d *OrderRepository) CreateOrder(order *requestmodel_order_svc.UserCart) (*responsemodel_order_svc.UserCart, error) {
 
 	var orderSucess responsemodel_order_svc.UserCart
-	query := "INSERT INTO orders (user_id, payment_method, order_id_online) VALUES(?, ?, ?) RETURNING*"
-	result := d.DB.Raw(query, order.UserID, order.PaymentMethod, order.PaymentID).Scan(&orderSucess)
+	query := "INSERT INTO orders (user_id, payment_method, order_id_online, intent_payment_id) VALUES(?, ?, ?, ?) RETURNING*"
+	result := d.DB.Raw(query, order.UserID, order.PaymentMethod, order.PaymentID, order.IntentUniquePaymentID).Scan(&orderSucess)
 	if result.Error != nil {
 		return nil, errors.New("face some issue while creating order")
 	}
@@ -50,7 +49,6 @@ func (d *OrderRepository) AddProdutToOrderProductTable(order *requestmodel_order
 }
 
 func (d *OrderRepository) GetOrderShowcase(userID string) (*[]responsemodel_order_svc.OrderShowcase, error) {
-	fmt.Println("***", userID)
 
 	var OrderShowcase []responsemodel_order_svc.OrderShowcase
 	query := "SELECT * FROM orders INNER JOIN order_products ON orders.id=order_products.order_id  WHERE orders.user_id=? ORDER BY order_products.item_id DESC "
@@ -62,4 +60,31 @@ func (d *OrderRepository) GetOrderShowcase(userID string) (*[]responsemodel_orde
 		return nil, resCustomError_product_svc.ErrNoRowAffected
 	}
 	return &OrderShowcase, nil
+}
+
+func (d *OrderRepository) GetOrderSecret(userID string, orderID string) (string, error) {
+	var paymentSecret string
+	query := "select order_id_online  from orders where id = $1 and user_id= $2"
+	result := d.DB.Raw(query, orderID, userID).Scan(&paymentSecret)
+	if result.Error != nil {
+		return "", errors.New("face some issue while order showcase")
+	}
+	if result.RowsAffected == 0 {
+		return "", resCustomError_product_svc.ErrNoRowAffected
+	}
+
+	return paymentSecret, nil
+}
+
+func (d *OrderRepository) UpdatePaymentStatus(IntentPaymentID string) error {
+	query := "UPDATE order_products SET payment_status = 'success', order_status = 'processing' FROM orders WHERE orders.id = order_products.order_id AND orders.intent_payment_id=$1"
+	result := d.DB.Exec(query, IntentPaymentID)
+	if result.Error != nil {
+		return errors.New("face some issue while update payment status")
+	}
+	if result.RowsAffected == 0 {
+		return resCustomError_product_svc.ErrNoRowAffected
+	}
+
+	return nil
 }

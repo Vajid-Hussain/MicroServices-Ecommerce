@@ -7,6 +7,8 @@ import (
 )
 
 func OrderRoutes(engin *gin.Engine, authMiddlewire handler.Middlewire, order handler_order_svc.OrderHandler) {
+	engin.POST("/webhook", order.StripeWebHook)
+	
 	orderManagement := engin.Group("/order")
 	{
 		orderManagement.GET("/", order.Payment)

@@ -9,4 +9,6 @@ type IOrderRepository interface {
 	CreateOrder(order *requestmodel_order_svc.UserCart) (*responsemodel_order_svc.UserCart, error)
 	AddProdutToOrderProductTable( *requestmodel_order_svc.UserCart,  *responsemodel_order_svc.UserCart) (*responsemodel_order_svc.UserCart, error)
 	GetOrderShowcase( string) (*[]responsemodel_order_svc.OrderShowcase, error)
+	GetOrderSecret( string,  string) (string, error) 
+	UpdatePaymentStatus( string) error
 }

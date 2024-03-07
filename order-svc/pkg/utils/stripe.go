@@ -8,7 +8,7 @@ import (
 	config_order_svc "github.com/vajid-hussain/mobile-mart-microservice-order/pkg/config"
 )
 
-func StripePaymentInitiation(data int, config *config_order_svc.Config) (string, error) {
+func StripePaymentInitiation(data int, config *config_order_svc.Config) (string, string, error) {
 	stripe.Key = config.StripeSecretKey
 
 	// product_params := &stripe.ProductParams{
@@ -45,9 +45,9 @@ func StripePaymentInitiation(data int, config *config_order_svc.Config) (string,
 	intent, err := paymentintent.New(params)
 	if err != nil {
 		fmt.Println("err:", err)
-		return "", err
+		return "","", err
 	}
 	fmt.Println("***&*", intent.ID, intent.ClientSecret)
 
-	return intent.ClientSecret, nil
+	return intent.ClientSecret, intent.ID, nil
 }

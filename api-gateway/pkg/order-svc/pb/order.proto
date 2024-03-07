@@ -4,10 +4,12 @@ package order;
 
 option go_package= "./pkg/order-svc/pb/";
 
+
 service orderService{
     rpc OrderCreation (orderRequest) returns (orderResponse) {}
     rpc GetAllOrders (orderShowCaseRequest) returns (orderShowCaseResponse) {}
     rpc OnlinePayment (PaymentRequest) returns (paymentResponse) {}
+    rpc UpdataPaymentStatus (updataPaymentStatusRequest) returns (updataPaymentStatusResponse) {}
 }
 
 message orderRequest{
@@ -47,3 +49,12 @@ message PaymentRequest{
 message paymentResponse{
     string OrderIDSecret =1;
 }
+
+message updataPaymentStatusRequest{
+    string IntentPaymentID =1;
+}
+
+message updataPaymentStatusResponse{
+    string message =1;
+}
+

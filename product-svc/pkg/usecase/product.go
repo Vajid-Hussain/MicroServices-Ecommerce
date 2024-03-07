@@ -199,7 +199,7 @@ func (r *categoryUseCase) GetCartForOrder(userID string) (*responsemodel_product
 		(*cartInventories)[i].FinalPrice = helper_product_svc.FindDiscount(float64(inventory.Price), float64(inventory.Discount+inventory.CategoryDiscount)) * inventory.Quantity
 		// fmt.Println("**", (*cartInventories)[i].FinalPrice)
 		cart.TotalPrice += (*cartInventories)[i].FinalPrice
-		// r.repo.DeleteInventoryFromCart(inventory.InventoryID, userID)
+		r.repo.DeleteInventoryFromCart(inventory.InventoryID, userID)
 	}
 
 	cart.Cart = *cartInventories

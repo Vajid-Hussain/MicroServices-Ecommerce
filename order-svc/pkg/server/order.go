@@ -82,3 +82,26 @@ func (u *OrderServer) GetAllOrders(ctx context.Context, req *pb.OrderShowCaseReq
 	return &pb.OrderShowCaseResponse{Orders: orders}, nil
 
 }
+
+func (u *OrderServer) OnlinePayment(ctx context.Context, req *pb.PaymentRequest) (*pb.PaymentResponse, error) {
+	result, err := u.usecase.GetOrderSecret(req.UserID, req.OrderID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.PaymentResponse{
+		OrderIDSecret: result,
+	}, nil
+}
+
+func (u *OrderServer) UpdataPaymentStatus(ctx context.Context, req *pb.UpdataPaymentStatusRequest) (*pb.UpdataPaymentStatusResponse, error) {
+	err := u.usecase.UpdatePaymentStatus(req.IntentPaymentID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdataPaymentStatusResponse{
+		Message: "payment succesfully updated. you order shortly deliverd",
+	}, nil
+}
+

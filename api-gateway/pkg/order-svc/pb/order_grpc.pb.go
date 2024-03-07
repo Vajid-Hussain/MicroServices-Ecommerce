@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	OrderService_OrderCreation_FullMethodName = "/order.orderService/OrderCreation"
-	OrderService_GetAllOrders_FullMethodName  = "/order.orderService/GetAllOrders"
-	OrderService_OnlinePayment_FullMethodName = "/order.orderService/OnlinePayment"
+	OrderService_OrderCreation_FullMethodName       = "/order.orderService/OrderCreation"
+	OrderService_GetAllOrders_FullMethodName        = "/order.orderService/GetAllOrders"
+	OrderService_OnlinePayment_FullMethodName       = "/order.orderService/OnlinePayment"
+	OrderService_UpdataPaymentStatus_FullMethodName = "/order.orderService/UpdataPaymentStatus"
 )
 
 // OrderServiceClient is the client API for OrderService service.
@@ -31,6 +32,7 @@ type OrderServiceClient interface {
 	OrderCreation(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*OrderResponse, error)
 	GetAllOrders(ctx context.Context, in *OrderShowCaseRequest, opts ...grpc.CallOption) (*OrderShowCaseResponse, error)
 	OnlinePayment(ctx context.Context, in *PaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	UpdataPaymentStatus(ctx context.Context, in *UpdataPaymentStatusRequest, opts ...grpc.CallOption) (*UpdataPaymentStatusResponse, error)
 }
 
 type orderServiceClient struct {
@@ -68,6 +70,15 @@ func (c *orderServiceClient) OnlinePayment(ctx context.Context, in *PaymentReque
 	return out, nil
 }
 
+func (c *orderServiceClient) UpdataPaymentStatus(ctx context.Context, in *UpdataPaymentStatusRequest, opts ...grpc.CallOption) (*UpdataPaymentStatusResponse, error) {
+	out := new(UpdataPaymentStatusResponse)
+	err := c.cc.Invoke(ctx, OrderService_UpdataPaymentStatus_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrderServiceServer is the server API for OrderService service.
 // All implementations must embed UnimplementedOrderServiceServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type OrderServiceServer interface {
 	OrderCreation(context.Context, *OrderRequest) (*OrderResponse, error)
 	GetAllOrders(context.Context, *OrderShowCaseRequest) (*OrderShowCaseResponse, error)
 	OnlinePayment(context.Context, *PaymentRequest) (*PaymentResponse, error)
+	UpdataPaymentStatus(context.Context, *UpdataPaymentStatusRequest) (*UpdataPaymentStatusResponse, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedOrderServiceServer) GetAllOrders(context.Context, *OrderShowC
 }
 func (UnimplementedOrderServiceServer) OnlinePayment(context.Context, *PaymentRequest) (*PaymentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OnlinePayment not implemented")
+}
+func (UnimplementedOrderServiceServer) UpdataPaymentStatus(context.Context, *UpdataPaymentStatusRequest) (*UpdataPaymentStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdataPaymentStatus not implemented")
 }
 func (UnimplementedOrderServiceServer) mustEmbedUnimplementedOrderServiceServer() {}
 
@@ -158,6 +173,24 @@ func _OrderService_OnlinePayment_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_UpdataPaymentStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdataPaymentStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).UpdataPaymentStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderService_UpdataPaymentStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).UpdataPaymentStatus(ctx, req.(*UpdataPaymentStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OrderService_ServiceDesc is the grpc.ServiceDesc for OrderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OnlinePayment",
 			Handler:    _OrderService_OnlinePayment_Handler,
+		},
+		{
+			MethodName: "UpdataPaymentStatus",
+			Handler:    _OrderService_UpdataPaymentStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -37,7 +37,7 @@
         var submitButton = document.getElementById('submit-button');
         submitButton.addEventListener('click', function(ev) {
             ev.preventDefault();
-            stripe.confirmCardPayment('pi_3OrMGhSFn03N8R3v1EkLtFrz_secret_yKvTT9P5xr1RED6nabl2SWtDH', {
+            stripe.confirmCardPayment('{{.paymentSecret}}', {
                 payment_method: {
                     card: card,
                 }

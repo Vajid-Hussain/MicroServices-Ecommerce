@@ -3,10 +3,11 @@ package domain_order_svc
 import "time"
 
 type Order struct {
-	ID            uint `gorm:"primary key"`
-	UserID        uint
-	PaymentMethod string
-	OrderIDOnline string
+	ID              uint `gorm:"primary key"`
+	UserID          uint
+	PaymentMethod   string
+	OrderIDOnline   string
+	IntentPaymentID string
 }
 
 type OrderProducts struct {

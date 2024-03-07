@@ -27,6 +27,7 @@ type UserCart struct {
 	InventoryCount uint   `json:"product_count"`
 	OrderID        string
 	PaymentID      string
+	IntentUniquePaymentID string
 	PaymentMethod  string
 	OrderStatus    string
 	PaymentStatus  string
