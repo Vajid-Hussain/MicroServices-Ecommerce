@@ -7,11 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/pb"
 	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/requestModel"
+	"github.com/vajid-hussain/mobile-mart-microservice/pkg/config"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 type UserHandler struct {
 	clind  pb.AuthServiceClient
 	server *gin.Engine
+	config *config.Config
 }
 
 func NewUserHandler(clind pb.AuthServiceClient, engin *gin.Engine) *UserHandler {
@@ -75,4 +79,18 @@ func (h *UserHandler) UserLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 	c.JSON(http.StatusOK, result)
+}
+
+
+func (h *UserHandler) Authv2(c *gin.Context) {
+	var AppConfig= oauth2.Config{
+		ClientID: h.config.GoogleClindID,
+		ClientSecret: h.config.GoogleClindSecret,
+		RedirectURL: "http://localhost:6000/google_callback",
+		Scopes:  []string{"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile"},
+		Endpoint: google.Endpoint,
+	}
+
+	url:= config.A
 }

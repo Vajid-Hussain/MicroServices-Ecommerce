@@ -4,17 +4,28 @@ import (
 	"fmt"
 
 	"github.com/spf13/viper"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 type Config struct {
-	Port     string `mapstructure:"PORT"`
-	AuthPort string `mapstructure:"AUTH_SVC"`
-	ProductPort string `mapstructure:"PRODUCT_SVC"`
-	OrderPort string `mapstructure:"ORDER_SVC"`
+	Port              string `mapstructure:"PORT"`
+	AuthPort          string `mapstructure:"AUTH_SVC"`
+	ProductPort       string `mapstructure:"PRODUCT_SVC"`
+	OrderPort         string `mapstructure:"ORDER_SVC"`
+	GoogleClindID     string `mapstructure:"GOOGLE_CLIENT_ID"`
+	GoogleClindSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
 }
 
+type ConfigAuth struct {
+	GoogleLoginConfig oauth2.Config
+}
+
+var AppConfig Config
+
+var c = &Config{}
+
 func InitConfig() (*Config, error) {
-	var c = &Config{}
 
 	viper.AddConfigPath("./")
 	viper.SetConfigName("dev")
@@ -23,12 +34,22 @@ func InitConfig() (*Config, error) {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	err = viper.Unmarshal(c)
 	if err != nil {
 		return nil, fmt.Errorf("can't resolve unmarshel env %v", err)
 	}
+
+	var AppConfig = oauth2.Config{
+		ClientID:     c.GoogleClindID,
+		ClientSecret: c.GoogleClindSecret,
+		RedirectURL:  "http://localhost:6000/google_callback",
+		Scopes: []string{"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile"},
+		Endpoint: google.Endpoint,
+	}
+
 	return c, nil
 }
