@@ -21,7 +21,7 @@ type ConfigAuth struct {
 	GoogleLoginConfig oauth2.Config
 }
 
-var AppConfig Config
+var AppConfig ConfigAuth
 
 var c = &Config{}
 
@@ -41,15 +41,20 @@ func InitConfig() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("can't resolve unmarshel env %v", err)
 	}
+	GoogleConfig()
+	return c, nil
+}
 
-	var AppConfig = oauth2.Config{
+func GoogleConfig() oauth2.Config {
+	AppConfig.GoogleLoginConfig = oauth2.Config{
 		ClientID:     c.GoogleClindID,
 		ClientSecret: c.GoogleClindSecret,
-		RedirectURL:  "http://localhost:6000/google_callback",
+		RedirectURL:  "http://localhost:6005/google_callback",
 		Scopes: []string{"https://www.googleapis.com/auth/userinfo.email",
 			"https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint: google.Endpoint,
 	}
 
-	return c, nil
+	return AppConfig.GoogleLoginConfig
 }
+

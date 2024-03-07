@@ -2,14 +2,14 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/pb"
 	requestmodel_auth_svc "github.com/vajid-hussain/mobile-mart-microservice/pkg/auth-svc/requestModel"
 	"github.com/vajid-hussain/mobile-mart-microservice/pkg/config"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 )
 
 type UserHandler struct {
@@ -81,16 +81,42 @@ func (h *UserHandler) UserLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-
 func (h *UserHandler) Authv2(c *gin.Context) {
-	var AppConfig= oauth2.Config{
-		ClientID: h.config.GoogleClindID,
-		ClientSecret: h.config.GoogleClindSecret,
-		RedirectURL: "http://localhost:6000/google_callback",
-		Scopes:  []string{"https://www.googleapis.com/auth/userinfo.email",
-		"https://www.googleapis.com/auth/userinfo.profile"},
-		Endpoint: google.Endpoint,
+	url := config.AppConfig.GoogleLoginConfig.AuthCodeURL("randomstate")
+
+	c.Redirect(http.StatusSeeOther, url)
+}
+
+func (h *UserHandler) GoogleCallback(c *gin.Context) {
+	state := c.Query("state")
+	if state != "randomstate" {
+		c.JSON(http.StatusBadRequest, "state is not matching")
+		return
 	}
 
-	url:= config.A
+	code := c.Query("code")
+
+	googlecon := config.GoogleConfig()
+
+	token, err := googlecon.Exchange(context.Background(), code)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "make code excahnge lead to error")
+		return
+	}
+
+	resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "get some access token follow to error")
+		return
+	}
+
+	userData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "fetch user data followt ot error")
+		return
+	}
+
+	fmt.Println("userdata", userData)
+
+	c.JSON(http.StatusOK, userData)
 }

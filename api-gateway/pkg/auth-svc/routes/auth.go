@@ -7,10 +7,11 @@ import (
 
 func RouteAuthUser(engin *gin.Engine, user *handler.UserHandler, authMiddlewire *handler.Middlewire) {
 
+	engin.GET("/google_callback", user.GoogleCallback)
+
 	userManagement := engin.Group("user")
-	{	
-		userManagement.GET("/google_login",user.Authv2)
-		// userManagement.POST("/google_callback",user.GoogleCallback)
+	{
+		userManagement.GET("/google_login", user.Authv2)
 		userManagement.POST("/signup", user.UserSignup)
 		userManagement.POST("/otpverification", user.OtpVerification)
 		userManagement.POST("/userlogin", user.UserLogin)
