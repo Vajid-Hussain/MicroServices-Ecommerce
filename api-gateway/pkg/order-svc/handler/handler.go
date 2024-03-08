@@ -102,22 +102,20 @@ func (h *OrderHandler) StripeWebHook(c *gin.Context) {
 
 	if eventType == "payment_intent.succeeded" {
 		fmt.Printf("Payment succeeded. ID: %s\n", paymentID)
+		result, err := h.Clind.UpdataPaymentStatus(context.Background(), &pb.UpdataPaymentStatusRequest{
+			IntentPaymentID: paymentID,
+		})
+		if err != nil {
+			fmt.Println("error at payment", paymentID, err)
+			return
+		}
+
+		fmt.Println("payment succesfully", result)
 	}
 	// else {
 	// 	fmt.Printf("Payment failed. ID: %s\n", paymentID)
 	// 	// Handle failed payment (e.g., log error, notify user)
 	// }
 
-	fmt.Println("Webhook event processed successfully", paymentStatus, paymentID)
-
-	result, err := h.Clind.UpdataPaymentStatus(context.Background(), &pb.UpdataPaymentStatusRequest{
-		IntentPaymentID: paymentID,
-	})
-	if err != nil {
-		fmt.Println("error at payment", paymentID, err)
-		return
-	}
-
-	fmt.Println("payment succesfully", result)
+	fmt.Println("Webhook event processed successfully", paymentStatus, paymentID, "evenType :=", eventType)
 }
-
