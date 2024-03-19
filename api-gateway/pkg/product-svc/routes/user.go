@@ -7,6 +7,7 @@ import (
 )
 
 func ProductUserRoutes(engin *gin.RouterGroup, category *handler_product_svc.ProductHandler, authMiddlewire *handler.Middlewire) {
+	
 	engin.GET("", category.GetAllProduct)
 
 	engin.Use(authMiddlewire.UserAuthMiddlewire)

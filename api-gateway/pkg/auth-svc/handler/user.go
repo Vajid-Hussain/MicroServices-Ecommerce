@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -116,7 +117,9 @@ func (h *UserHandler) GoogleCallback(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("userdata", userData)
+	fmt.Println("userdata", string(userData))
+	userDetails := requestmodel_auth_svc.UserDataOAuth{}
+	json.Unmarshal(userData, &userDetails)
 
-	c.JSON(http.StatusOK, userData)
+	c.JSON(http.StatusOK, userDetails)
 }

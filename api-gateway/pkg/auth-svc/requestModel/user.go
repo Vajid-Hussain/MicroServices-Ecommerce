@@ -22,3 +22,13 @@ type AdminLoginData struct {
     Email    string `json:"email"    validate:"email"`
     Password string `json:"password" validate:"min=4"`
 }
+
+type UserDataOAuth struct {
+    ID             string `json:"id"`
+    Email          string `json:"email"`
+    VerifiedEmail  bool   `json:"verified_email"`
+    Name           string `json:"name"`
+    GivenName      string `json:"given_name"`
+    Picture        string `json:"picture"`
+    Locale         string `json:"locale"`
+}
